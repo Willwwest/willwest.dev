@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Domo AI Pipeline Audit at Domopalooza 2026 | Will West</title>
+<meta name="description" content="How Will West used Claude Code and the Domo API to find silent errors in mortgage dataflows. See the live fix log, keynote recording, and project source.">
+<link rel="canonical" href="https://willwest.dev/work/domo-ai-pipeline-audit/">
+<meta property="og:url" content="https://willwest.dev/work/domo-ai-pipeline-audit/">
+<meta property="og:title" content="Domo AI Pipeline Audit at Domopalooza 2026 | Will West">
+<meta property="og:description" content="How Will West used Claude Code and the Domo API to find silent errors in mortgage dataflows. See the live fix log, keynote recording, and project source.">
+<meta property="og:type" content="article">
+<meta name="theme-color" content="#08080a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2308080a'/%3E%3Ctext x='32' y='44' font-family='Helvetica,Arial' font-size='36' font-weight='700' fill='white' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/assets/article.css">
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+<header class="hdr">
+  <div class="col">
+    <a class="brand" href="/"><i aria-hidden="true">W</i>Will West</a>
+    <nav aria-label="Main navigation"><a href="/#proof">Work</a><a href="/pricing/">Pricing</a></nav>
+  </div>
+</header>
+<main id="content">
+<article class="col">
+  <h1>How I audited Domo mortgage dataflows with Claude Code</h1>
+  <p class="meta">Will West · Domopalooza keynote · March 31, 2026</p>
+  <p class="sum">At Domopalooza, I used Claude Code and the Domo API to audit mortgage dataflows that still ran successfully. The live fix log recorded 25 fixes across five ETLs and zero errors applying the changes.</p>
+
+  <h2>How a successful run produced wrong numbers</h2>
+  <p>In a 2018–2020 Home Mortgage Disclosure Act dataflow, eleven branches of a <code>purchaser_type</code> rule checked the same value. Only the first branch could run. The mapping labeled every row “Not applicable,” including rows that should have identified a mortgage purchaser.</p>
+  <p>Another rule used <code>Prinicial residence</code> where the data used <code>Principal residence</code>. Downstream filters returned zero matching rows without raising an error. Eight other CASE statements omitted an ELSE branch, so unmatched values became NULL.</p>
+
+  <h2>What changed during the keynote?</h2>
+  <p>Using the Domo API, I saved corrections to the purchaser codes and residence spelling, added fallback branches, aligned join keys, and guarded three divisions with NULLIF. The on-screen log counted changes applied during the demonstration.</p>
+  <figure>
+    <picture>
+      <source type="image/avif" srcset="/assets/evidence-532.d9ecc35e.avif">
+      <img src="/assets/evidence-532.225fce4e.jpg" width="532" height="492" alt="Live fix log reporting 25 fixes across five ETLs with zero errors">
+    </picture>
+    <figcaption>The fix log shown on stage after the five dataflows were saved.</figcaption>
+  </figure>
+  <p><a class="lnk" href="https://www.youtube.com/watch?v=7HvOlSnfubQ">Watch the Domo CEO keynote and AI demonstration</a> · <a class="lnk" href="https://github.com/Willwwest/domopalooza2026">Explore the keynote project on GitHub</a></p>
+
+  <h2>What would I look for in another pipeline?</h2>
+  <p>I’d start with rules that can quietly change the meaning of the output. Repeated conditions, filters that match no records, and missing fallback values all deserve inspection even when the job finishes successfully.</p>
+  <p><a class="lnk" href="/consulting/">How I work with enterprise data teams</a></p>
+</article>
+</main>
+</body>
+</html>

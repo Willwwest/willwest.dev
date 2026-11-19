@@ -8,6 +8,8 @@
 <meta property="og:title" content="Will West — Applied AI &amp; Forward Deployed Engineering">
 <meta property="og:description" content="Getting AI systems from idea into production inside your environment — agents on governed data, through security review, owned by your team.">
 <meta property="og:type" content="website">
+<link rel="canonical" href="https://willwest.dev/">
+<meta property="og:url" content="https://willwest.dev/">
 <meta name="theme-color" content="#08080a">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2308080a'/%3E%3Ctext x='32' y='44' font-family='Helvetica,Arial' font-size='36' font-weight='700' fill='white' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E">
 <style>
@@ -592,7 +594,7 @@
       </div>
       <div class="hact">
         <a class="btn solid" href="mailto:quotes@willwest.dev">Get in touch</a>
-        <a class="lnk" href="pricing/">See pricing →</a>
+        <a class="lnk" href="pricing/">AI build pricing →</a>
         <a class="lnk" href="https://www.linkedin.com/in/westwill">LinkedIn ↗</a>
       </div>
     </div>
@@ -650,36 +652,10 @@
       </div>
       <div>
         <div class="step">
-          <em>The setup</em>
-          <p>A pipeline that fails is easy to notice. One that keeps running while <b>producing
-          wrong numbers can go unnoticed for months</b>, which makes it the more expensive problem to
-          have.</p>
-          <p>The ask on stage went to the harder version: "look through every
-          single ETL, find the ones that have issues, not just the ones that are broken."
-          Misspellings in filters, empty columns, bad CASE statements, joins that look suspicious.</p>
-        </div>
-        <div class="step">
-          <em>What it found</em>
-          <p>In a 2018–2020 HMDA mortgage dataflow, a <code>purchaser_type</code> CASE had <b>eleven
-          WHEN clauses that all tested the same value</b>. Only the first branch could fire.
-          Fannie Mae, Ginnie Mae, Freddie Mac: dead code, every row labelled "Not applicable."</p>
-          <p>The more interesting one was <b>a single typo</b>: <code>Prinicial residence</code> where the data said
-          <code>Principal residence</code>. Every downstream filter looking for "Principal"
-          returned zero rows, and <b>nothing anywhere threw an error</b>. Plus eight CASE statements
-          with no ELSE,
-          turning unmatched values into NULL.</p>
-        </div>
-        <div class="step">
-          <em>The fix</em>
-          <p>Then the follow-up prompt, typed live: "how many of these can you fix for me right
-          now, my job depends on it." Five dataflows repaired and saved in front of the room:
-          purchaser codes corrected, the typo fixed, ELSE clauses added, join keys aligned, NULLIF
-          guards put around three divisions. <b>25 fixes across 5 ETLs, zero errors.</b></p>
-        </div>
-        <div class="step">
-          <em>Why it matters</em>
-          <p><b>None of that came down to model capability.</b> It came down to governance, API access, and
-          knowing which kinds of failure stay hidden.</p>
+          <h3>Auditing Domo mortgage dataflows with Claude Code</h3>
+          <p>Eleven branches of a purchaser-code rule tested the same value. A misspelled residence
+          filter silently dropped every matching record. Both dataflows still ran.</p>
+          <p><a class="lnk" href="/work/domo-ai-pipeline-audit/">Read the Domo pipeline audit and see the fix log →</a></p>
         </div>
         <figure class="ev">
           <a class="pic" href="assets/evidence-532.225fce4e.jpg" target="_blank" rel="noopener"
@@ -989,6 +965,7 @@
     <a class="big" href="mailto:quotes@willwest.dev">quotes@willwest.dev</a>
     <div class="sub">
       <a class="lnk" href="https://www.linkedin.com/in/westwill">linkedin.com/in/westwill</a>
+      <a class="lnk" href="/consulting/">AI consulting engagements</a>
       <a class="lnk" href="pricing/">Pricing</a>
       <a class="lnk" href="https://github.com/Willwwest">github.com/Willwwest</a>
     </div>

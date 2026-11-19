@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://willwest.dev/sitemap.xml
