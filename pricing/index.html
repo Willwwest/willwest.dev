@@ -88,9 +88,9 @@
   <div class="col">
     <a class="brand" href="../"><i aria-hidden="true">W</i>Will West</a>
     <nav aria-label="Contact">
-      <button type="button" class="mail hide-s" data-copy="quotes@willwest.dev" title="Copy email address">Copy email</button>
+      <button type="button" class="mail hide-s" hidden data-copy="quotes@willwest.dev" title="Copy email address">Copy email</button>
       <a class="hide-s" href="../">Work</a>
-      <button type="button" class="btn solid" data-quote>Get a quote <small>24 h</small></button>
+      <a class="btn solid" href="#quote" data-quote>Get a quote <small>24 h</small></a>
     </nav>
   </div>
 </header>
@@ -200,10 +200,10 @@
   </ul>
 
   <h2 id="quote">Have a project in mind?</h2>
-  <p>Describe it below and you'll have a written quote within a day. Or email
+  <p>For a written quote within a day, email a short description of your project to
   <a class="lnk" href="mailto:quotes@willwest.dev">quotes@willwest.dev</a>.</p>
 
-  <form class="quote" data-form novalidate>
+  <form class="quote" method="dialog" data-form novalidate hidden>
     <h3>Your project in a line</h3>
     <label class="fld"><span>Describe the project <em>(rough is fine)</em></span>
       <textarea name="project" required placeholder="An agent that reads our claims inbox and drafts responses from the policy system"></textarea></label>
@@ -225,7 +225,7 @@
 </footer>
 
 <dialog class="qm" id="qm" aria-labelledby="qmt">
-  <form class="quote" data-form novalidate>
+  <form class="quote" method="dialog" data-form novalidate hidden>
     <div class="qmh">
       <div><h3 id="qmt">Get a quote</h3><p>Fixed price, quoted within 24 hours. I read every message myself.</p></div>
       <button class="x" type="button" data-close aria-label="Close"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 1l10 10M11 1L1 11"/></svg></button>
@@ -254,16 +254,7 @@
 <script>
 (function(){
   var TO = 'quotes@willwest.dev';
-  // Set this to a form endpoint (Formspree, a Worker, etc.) once the site has its own domain.
-  // While it's empty the form falls back to opening a pre-filled email.
-  var ENDPOINT = '';
-
   var qm = document.getElementById('qm');
-  document.querySelectorAll('[data-quote]').forEach(function(b){
-    b.addEventListener('click', function(){
-      if (qm && qm.showModal) qm.showModal(); else location.hash = 'quote';
-    });
-  });
   if (qm){
     qm.querySelector('[data-close]').addEventListener('click', function(){ qm.close(); });
     qm.addEventListener('click', function(e){ if (e.target === qm) qm.close(); });
@@ -275,6 +266,7 @@
       (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject())
         .then(function(){ toast('Email copied'); }, function(){ location.href = 'mailto:' + t; });
     });
+    b.hidden = false;
   });
   function toast(s){
     var d = document.createElement('div'); d.className = 'toast'; d.setAttribute('role','status'); d.textContent = s;
@@ -289,12 +281,6 @@
       if (!project){ return fail('Add a line about the project.', f.elements.project); }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ return fail('Enter an email I can reply to, like name@company.com.', f.elements.email); }
 
-      if (ENDPOINT){
-        fetch(ENDPOINT, { method:'POST', headers:{ 'Accept':'application/json' }, body:d })
-          .then(function(r){ if (!r.ok) throw 0; done("Thanks. I'll reply to " + email + ' with a written quote within 24 hours.'); })
-          .catch(function(){ fail("That didn't send. Try again, or email " + TO + '.'); });
-        return;
-      }
       var lines = [];
       if (d.get('offer')) lines.push('Help with: ' + d.get('offer'));
       lines.push('Project: ' + project);
@@ -305,9 +291,16 @@
         '&body=' + encodeURIComponent(lines.join('\n'));
       done('Your email app should open with this filled in. Send it and you\'ll have a written quote within 24 hours. If nothing opened, email ' + TO + '.');
     });
+    f.hidden = false;
     function done(s){ ok.textContent = s; ok.hidden = false; }
     function fail(s, el){ err.textContent = s; err.hidden = false; if (el) el.focus(); }
   });
+  if (qm && qm.showModal){
+    document.querySelector('[data-quote]').addEventListener('click', function(e){
+      e.preventDefault();
+      qm.showModal();
+    });
+  }
 })();
 </script>
 </body>

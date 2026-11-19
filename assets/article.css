@@ -32,8 +32,8 @@
   .brand i{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--s2);
        border:1px solid var(--hair);font-style:normal;font-size:14px;font-weight:700}
   .hdr nav{display:flex;align-items:center;gap:clamp(12px,2vw,24px)}
-  .hdr nav a,.hdr nav button.mail{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--t3);transition:color .25s}
-  .hdr nav a:hover,.hdr nav button.mail:hover{color:var(--w)}
+  .hdr nav a:not(.btn),.hdr nav button.mail{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--t3);transition:color .25s}
+  .hdr nav a:not(.btn):hover,.hdr nav button.mail:hover{color:var(--w)}
   button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
   .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;

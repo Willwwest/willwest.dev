@@ -1,15 +1,27 @@
 """Check the local search pages, or the deployed site with --live."""
 import argparse
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
 from html.parser import HTMLParser
+from mimetypes import guess_type
 from pathlib import Path
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import unquote, urldefrag, urljoin, urlsplit
 from urllib.request import Request, urlopen
 from urllib.robotparser import RobotFileParser
 from xml.etree import ElementTree
 
 ROOT = Path(__file__).resolve().parents[2]
 ORIGIN = 'https://willwest.dev'
+
+
+def srcset_urls(value):
+    # URLs can contain commas (notably inline data images). Descriptors end at the next comma.
+    while value.strip(' ,\t\r\n\f'):
+        url, *rest = value.lstrip(' ,\t\r\n\f').split(None, 1)
+        yield url.rstrip(',')
+        value = rest[0] if rest else ''
+        if not url.endswith(','):
+            value = value.partition(',')[2]
 
 
 class Page(HTMLParser):
@@ -19,6 +31,7 @@ class Page(HTMLParser):
         self.description = ''
         self.robots = []
         self.links = []
+        self.assets = []
         self.headings = 0
         self.title = ''
         self.in_title = False
@@ -41,6 +54,17 @@ class Page(HTMLParser):
                 self.robots.append(attrs.get('content', ''))
         if tag == 'a' and attrs.get('href'):
             self.links.append(attrs['href'])
+
+        if tag == 'img' and attrs.get('src'):
+            self.assets.append((attrs['src'], 'image'))
+        if tag in ('img', 'source') and attrs.get('srcset'):
+            self.assets.extend((src, 'image') for src in srcset_urls(attrs['srcset']))
+        if tag == 'link' and 'stylesheet' in attrs.get('rel', '').lower().split() and attrs.get('href'):
+            self.assets.append((attrs['href'], 'stylesheet'))
+        if tag == 'a' and attrs.get('href'):
+            mime = guess_type(urlsplit(attrs['href']).path)[0] or ''
+            if mime.startswith('image/'):
+                self.assets.append((attrs['href'], 'image'))
 
     def handle_endtag(self, tag):
         if tag == 'title':
@@ -65,6 +89,22 @@ def read(path, live):
     return file.read_text(), []
 
 
+def check_asset(url, kind, live):
+    path = (ROOT / unquote(urlsplit(url).path).lstrip('/')).resolve()
+    if not path.is_relative_to(ROOT) or not path.is_file() or not path.stat().st_size:
+        raise ValueError('missing or empty in the deployment source')
+    if live:
+        request = Request(url, headers={'User-Agent': 'WillWest-Site-Check/1.0'})
+        with urlopen(request, timeout=15) as response:
+            mime = response.headers.get_content_type()
+            if response.status != 200 or response.url != url:
+                raise ValueError(f'HTTP {response.status} at {response.url}')
+            if not (mime.startswith('image/') if kind == 'image' else mime == 'text/css'):
+                raise ValueError(f'unexpected content type {mime}')
+            if response.read() != path.read_bytes():
+                raise ValueError('served bytes differ from the deployment source')
+
+
 def check(live):
     paths = set()
     for file in ROOT.rglob('index.html'):
@@ -86,6 +126,7 @@ def check(live):
     if ORIGIN + '/sitemap.xml' not in (rules.site_maps() or []):
         errors.append('robots.txt must advertise the canonical sitemap')
 
+    assets = {}
     links = {}
     titles = Counter()
     for path in sorted(paths):
@@ -102,6 +143,10 @@ def check(live):
         for crawler in ('Googlebot', 'OAI-SearchBot', 'Bingbot'):
             if not rules.can_fetch(crawler, url):
                 errors.append(f'{path} blocked for {crawler} by robots.txt')
+        for reference, kind in page.assets:
+            target, _ = urldefrag(urljoin(url, reference))
+            if target.startswith(ORIGIN + '/'):
+                assets.setdefault((target, kind), path)
         titles[page.title.strip()] += 1
         links[path] = set()
         for link in page.links:
@@ -112,6 +157,14 @@ def check(live):
                 links[path].add(target.path)
             elif not (ROOT / target.path.lstrip('/')).is_file():
                 errors.append(f'{path} broken internal link: {link}')
+
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        checks = {key: pool.submit(check_asset, *key, live) for key in assets}
+        for (url, kind), result in checks.items():
+            try:
+                result.result()
+            except (OSError, ValueError) as error:
+                errors.append(f'{assets[url, kind]} {kind} {url}: {error}')
 
     seen = set()
     queue = ['/']
@@ -127,7 +180,8 @@ def check(live):
             errors.append(f'Repeated page title: {title}')
     if errors:
         raise ValueError('\n'.join(errors))
-    print(f'Passed search checks for {len(paths)} pages, robots.txt and sitemap.xml.')
+    counts = Counter(kind for _, kind in assets)
+    print(f'Passed: {len(paths)} pages, {counts["image"]} images, {counts["stylesheet"]} stylesheets, robots.txt and sitemap.xml.')
 
 
 if __name__ == '__main__':
