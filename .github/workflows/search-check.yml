@@ -1,0 +1,35 @@
+name: Production search check
+
+on:
+  workflow_run:
+    workflows: ["pages build and deployment"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-search-check
+  cancel-in-progress: true
+
+jobs:
+  check:
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          persist-credentials: false
+      - name: Check deployed pages, sitemap, and crawler access
+        run: |
+          for delay in 0 15 45; do
+            sleep "$delay"
+            if python3 .github/scripts/check_search.py --live; then
+              exit 0
+            fi
+          done
+          exit 1
