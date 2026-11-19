@@ -1,5 +1,6 @@
 """Check the local search pages, or the deployed site with --live."""
 import argparse
+import re
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from html.parser import HTMLParser
@@ -9,6 +10,8 @@ from urllib.parse import unquote, urldefrag, urljoin, urlsplit
 from urllib.request import Request, urlopen
 from urllib.robotparser import RobotFileParser
 from xml.etree import ElementTree
+
+from page_policy import policy_tags
 
 ROOT = Path(__file__).resolve().parents[2]
 ORIGIN = 'https://willwest.dev'
@@ -105,6 +108,18 @@ def check_asset(url, kind, live):
                 raise ValueError('served bytes differ from the deployment source')
 
 
+def check_privacy(path, markup, page, errors):
+    source, _ = read(path, False)
+    if policy_tags(source) not in markup or policy_tags(markup) != policy_tags(source):
+        errors.append(f'{path} content security policy differs from the reviewed source')
+    if re.search(r'@(?:gmail|googlemail)\.com\b', markup, re.IGNORECASE):
+        errors.append(f'{path} contains a personal email domain')
+    for link in page.links:
+        target = urlsplit(link)
+        if target.scheme == 'tel' or (target.scheme == 'mailto' and target.path != 'quotes@willwest.dev'):
+            errors.append(f'{path} publishes an unexpected contact link')
+
+
 def check(live):
     paths = set()
     for file in ROOT.rglob('index.html'):
@@ -126,6 +141,9 @@ def check(live):
     if ORIGIN + '/sitemap.xml' not in (rules.site_maps() or []):
         errors.append('robots.txt must advertise the canonical sitemap')
 
+    missing_page, _ = read('/404.html', live)
+    check_privacy('/404.html', missing_page, Page(missing_page), errors)
+
     assets = {}
     links = {}
     titles = Counter()
@@ -133,6 +151,7 @@ def check(live):
         url = ORIGIN + path
         markup, headers = read(path, live)
         page = Page(markup)
+        check_privacy(path, markup, page, errors)
         if page.canonicals != [url]:
             errors.append(f'{path} canonical: {page.canonicals}')
         if page.headings != 1 or not page.title.strip() or not page.description:

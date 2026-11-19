@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-MmD3C3lnmVgH/3LSs/RX6xUQ/QvmFzr2E1EWT5pGEno='; style-src 'self' 'sha256-2gUdrB5WMdq0rhc5hJCAKL5XHwXjq3FV/1XLdA3jXl0='; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI MVP Development Cost and Timeline | Will West</title>
 <meta name="description" content="Will West charges $15,000 to $30,000 for an AI MVP delivered in two to four weeks. Published prices for an Idea Sprint, an MVP build and a monthly Product Partner retainer, compared with what other studios publish.">
@@ -201,14 +203,14 @@
 
   <h2 id="quote">Have a project in mind?</h2>
   <p>For a written quote within a day, email a short description of your project to
-  <a class="lnk" href="mailto:quotes@willwest.dev">quotes@willwest.dev</a>.</p>
+  <a class="lnk" href="mailto:quotes@willwest.dev?subject=Website%20quote%20request">quotes@willwest.dev</a>.</p>
 
   <form class="quote" method="dialog" data-form novalidate hidden>
     <h3>Your project in a line</h3>
     <label class="fld"><span>Describe the project <em>(rough is fine)</em></span>
-      <textarea name="project" required placeholder="An agent that reads our claims inbox and drafts responses from the policy system"></textarea></label>
+      <textarea name="project" maxlength="1200" required placeholder="An agent that reads our claims inbox and drafts responses from the policy system"></textarea></label>
     <label class="fld"><span>Email I can reply to</span>
-      <input type="email" name="email" required autocomplete="email" placeholder="name@company.com"></label>
+      <input type="email" name="email" maxlength="254" required autocomplete="email" placeholder="name@company.com"></label>
     <div class="acts"><button class="btn solid" type="submit">Get a quote</button></div>
     <p class="msg ok" data-ok hidden></p>
     <p class="msg err" data-err hidden></p>
@@ -239,12 +241,12 @@
       </div>
     </fieldset>
     <label class="fld"><span>The project</span>
-      <textarea name="project" required placeholder="What it should do, whose data it touches, and any deadline"></textarea></label>
+      <textarea name="project" maxlength="1200" required placeholder="What it should do, whose data it touches, and any deadline"></textarea></label>
     <div class="row2">
-      <label class="fld"><span>Your name</span><input name="name" autocomplete="name"></label>
-      <label class="fld"><span>Email for the quote</span><input type="email" name="email" required autocomplete="email" placeholder="name@company.com"></label>
+      <label class="fld"><span>Your name</span><input name="name" maxlength="100" autocomplete="name"></label>
+      <label class="fld"><span>Email for the quote</span><input type="email" name="email" maxlength="254" required autocomplete="email" placeholder="name@company.com"></label>
     </div>
-    <label class="fld"><span>Budget <em>(if you have one)</em></span><input name="budget" placeholder="$"></label>
+    <label class="fld"><span>Budget <em>(if you have one)</em></span><input name="budget" maxlength="80" placeholder="$"></label>
     <div class="acts"><button class="btn solid" type="submit">Send</button><span class="note">Replies within 24 hours.</span></div>
     <p class="msg ok" data-ok hidden></p>
     <p class="msg err" data-err hidden></p>
@@ -279,7 +281,7 @@
       e.preventDefault(); ok.hidden = err.hidden = true;
       var d = new FormData(f), project = (d.get('project')||'').trim(), email = (d.get('email')||'').trim();
       if (!project){ return fail('Add a line about the project.', f.elements.project); }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ return fail('Enter an email I can reply to, like name@company.com.', f.elements.email); }
+      if (f.elements.email.validity.typeMismatch || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ return fail('Enter an email I can reply to, like name@company.com.', f.elements.email); }
 
       var lines = [];
       if (d.get('offer')) lines.push('Help with: ' + d.get('offer'));
@@ -287,7 +289,7 @@
       if ((d.get('name')||'').trim()) lines.push('Name: ' + d.get('name').trim());
       lines.push('Reply to: ' + email);
       if ((d.get('budget')||'').trim()) lines.push('Budget: ' + d.get('budget').trim());
-      location.href = 'mailto:' + TO + '?subject=' + encodeURIComponent('Quote request: ' + project.slice(0,60)) +
+      location.href = 'mailto:' + TO + '?subject=' + encodeURIComponent('Website quote request') +
         '&body=' + encodeURIComponent(lines.join('\n'));
       done('Your email app should open with this filled in. Send it and you\'ll have a written quote within 24 hours. If nothing opened, email ' + TO + '.');
     });
