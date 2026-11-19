@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Build Prices — Will West</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Will West's AI MVP build costs $15,000 to $30,000 in two to four weeks. Published prices for an Idea Sprint, an MVP build and a monthly Product Partner retainer, compared with what other studios publish.">
+<meta property="og:title" content="AI build prices: Will West and other studios compared">
+<meta property="og:description" content="Idea Sprint $2,000–$3,000. MVP build $15,000–$30,000. Product Partner $6,000–$10,000 a month. Fixed quote within 24 hours.">
+<meta property="og:type" content="article">
+<meta name="theme-color" content="#08080a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2308080a'/%3E%3Ctext x='32' y='44' font-family='Helvetica,Arial' font-size='36' font-weight='700' fill='white' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E">
+<style>
+  /* Tokens copied from the home page so this page reads as the same site. */
+  :root{
+    --s0:#08080a; --s1:#0d0d10; --s2:#131317;
+    --hair:rgba(255,255,255,.09); --hair2:rgba(255,255,255,.055);
+    --w:#fff; --t1:#f2f2f4; --t2:#a8a8b2; --t3:#9a9aa4; --t4:#85858f;
+    --bad:#ff9b9b; --good:#b8e6c4;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    --gut:clamp(20px,4vw,44px); --hdr:64px; --m-body:680px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;scroll-padding-top:calc(var(--hdr) + 24px);-webkit-text-size-adjust:100%;
+       color-scheme:dark;scrollbar-color:#2c2c36 var(--s0);scrollbar-width:thin}
+  body{background:var(--s0);color:var(--t2);font:16.5px/1.68 var(--sans);
+       -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  .lnk{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px;
+       text-decoration-color:rgba(255,255,255,.28);transition:text-decoration-color .25s,color .25s}
+  .lnk:hover{text-decoration-color:var(--w);color:var(--w)}
+  ::selection{background:#2a2a34;color:#fff}
+  :focus-visible{outline:2px solid var(--w);outline-offset:3px;border-radius:2px}
+  .skip{position:absolute;left:-9999px;top:8px;z-index:100;background:var(--w);color:#0a0a0c;padding:8px 14px;border-radius:6px}
+  .skip:focus{left:12px}
+  .col{width:100%;max-width:820px;margin:0 auto;padding-inline:var(--gut)}
+
+  /* header */
+  .hdr{position:sticky;top:0;height:var(--hdr);z-index:50;display:flex;align-items:center;
+       background:rgba(8,8,10,.8);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);
+       border-bottom:1px solid var(--hair2)}
+  .hdr .col{display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:1140px}
+  .brand{display:flex;align-items:center;gap:10px;color:var(--w);font-weight:650;letter-spacing:-.01em;font-size:15px}
+  .brand i{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--s2);
+       border:1px solid var(--hair);font-style:normal;font-size:14px;font-weight:700}
+  .hdr nav{display:flex;align-items:center;gap:clamp(12px,2vw,24px)}
+  .hdr nav a,.hdr nav button.mail{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--t3);transition:color .25s}
+  .hdr nav a:hover,.hdr nav button.mail:hover{color:var(--w)}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;
+       font-size:14px;font-weight:600;transition:background .25s,border-color .25s,transform .25s}
+  .btn.solid{background:var(--w);color:#0a0a0c;box-shadow:inset 0 -1px 0 rgba(0,0,0,.12),0 10px 28px -14px rgba(255,255,255,.3)}
+  .btn.solid:hover{background:#d9d9e0;transform:translateY(-1px)}
+  .btn.ghost{border:1px solid var(--hair);color:var(--t1)}
+  .btn.ghost:hover{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.04)}
+  .btn small{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:inherit;opacity:.65}
+
+  /* article */
+  main{padding-block:clamp(48px,8vw,96px) clamp(40px,6vw,72px);
+       background:radial-gradient(70% 40% at 30% 0%,#121217 0%,transparent 70%) no-repeat}
+  .kick{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--t4)}
+  h1{margin-top:14px;font-size:clamp(30px,5vw,50px);line-height:1.08;letter-spacing:-.03em;font-weight:700;color:var(--w);text-wrap:balance}
+  .sum{margin-top:20px;font-size:clamp(18px,2vw,21px);line-height:1.5;color:var(--t1);font-weight:500;max-width:var(--m-body)}
+  .meta{margin-top:18px;display:flex;flex-wrap:wrap;gap:6px 18px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--t4)}
+  h2{margin-top:clamp(48px,6vw,68px);padding-top:clamp(20px,2.4vw,28px);border-top:1px solid var(--hair);
+     font-size:clamp(22px,2.8vw,30px);line-height:1.18;letter-spacing:-.02em;font-weight:660;color:var(--w);text-wrap:balance}
+  h3{margin-top:30px;font-size:17px;font-weight:630;color:var(--w);letter-spacing:-.01em}
+  article p,article ul{margin-top:16px;max-width:var(--m-body)}
+  article ul{padding-left:20px}
+  article li{margin-top:6px}
+  article li::marker{color:var(--t4)}
+  article b{color:var(--w);font-weight:600}
+  .note{font-size:14px;color:var(--t3)}
+
+  /* tables */
+  .tbl{margin-top:22px;overflow-x:auto;border:1px solid var(--hair);border-radius:12px;background:var(--s1)}
+  table{width:100%;border-collapse:collapse;font-size:14.5px;line-height:1.5}
+  caption{text-align:left;padding:12px 16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--t4);border-bottom:1px solid var(--hair)}
+  th,td{text-align:left;padding:11px 16px;vertical-align:top}
+  thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);font-weight:500;border-bottom:1px solid var(--hair)}
+  tbody tr+tr td,tbody tr+tr th{border-top:1px solid var(--hair2)}
+  tbody th{color:var(--w);font-weight:600}
+  td.num{font-variant-numeric:tabular-nums;color:var(--t1);white-space:nowrap}
+  .tbl.offers tbody th{font-size:15.5px}
+  .tbl.offers td.num{font-size:15.5px;font-weight:600;color:var(--w)}
+  td a{color:var(--t2)}
+
+  /* quote form (inline and modal share it) */
+  .quote{margin-top:24px;padding:clamp(20px,3vw,30px);border:1px solid var(--hair);border-radius:14px;background:var(--s1);max-width:var(--m-body)}
+  .quote h3{margin-top:0}
+  .fld{margin-top:16px;display:flex;flex-direction:column;gap:7px}
+  .fld>span,.fld legend{font-size:13px;font-weight:600;color:var(--t1)}
+  .fld em{font-style:normal;font-weight:400;color:var(--t4)}
+  fieldset.fld{border:0}
+  fieldset.fld legend{margin-bottom:7px}
+  input,textarea{font:inherit;font-size:15px;color:var(--w);background:var(--s0);border:1px solid var(--hair);
+       border-radius:9px;padding:11px 13px;width:100%;transition:border-color .2s}
+  input::placeholder,textarea::placeholder{color:#6d6d77}
+  input:focus,textarea:focus{outline:none;border-color:rgba(255,255,255,.45)}
+  textarea{min-height:96px;resize:vertical}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chips label{position:relative}
+  .chips input{position:absolute;opacity:0;width:1px;height:1px}
+  .chips span{display:inline-block;padding:8px 14px;border-radius:999px;border:1px solid var(--hair);font-size:13.5px;color:var(--t2);cursor:pointer;transition:all .2s}
+  .chips input:checked+span{background:var(--w);color:#0a0a0c;border-color:var(--w)}
+  .chips input:focus-visible+span{outline:2px solid var(--w);outline-offset:3px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+  .acts{margin-top:20px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px}
+  .acts .note{margin:0}
+  .msg{margin-top:16px;font-size:14.5px}
+  .msg.ok{color:var(--good)} .msg.err{color:var(--bad)}
+  [hidden]{display:none!important}
+
+  /* modal */
+  dialog.qm{margin:auto;width:min(560px,calc(100vw - 24px));max-height:calc(100vh - 24px);background:var(--s1);color:var(--t2);
+       border:1px solid var(--hair);border-radius:16px;padding:0}
+  dialog.qm::backdrop{background:rgba(0,0,0,.66);backdrop-filter:blur(4px)}
+  dialog.qm .quote{margin:0;border:0;max-width:none;background:transparent}
+  .qmh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  .qmh h3{font-size:22px;letter-spacing:-.02em}
+  .qmh p{margin-top:6px;font-size:14px;color:var(--t3)}
+  .x{width:32px;height:32px;border-radius:50%;border:1px solid var(--hair);display:grid;place-items:center;flex:none}
+  .x:hover{border-color:rgba(255,255,255,.4)}
+  .x svg{width:11px;height:11px;stroke:currentColor;stroke-width:1.6}
+
+  footer{border-top:1px solid var(--hair2);padding-block:26px 46px}
+  footer .col{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:1140px}
+  footer span,footer a{font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--t4)}
+  footer a:hover{color:var(--w)}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--w);color:#0a0a0c;
+       padding:9px 16px;border-radius:999px;font-size:13.5px;font-weight:600;z-index:200}
+
+  @media(max-width:640px){
+    .hdr nav .hide-s{display:none}
+    .row2{grid-template-columns:1fr}
+    th,td{padding:10px 12px}
+    td.num{white-space:normal}
+    .tbl:not(.offers) table{min-width:560px}
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="hdr">
+  <div class="col">
+    <a class="brand" href="../consulting/"><i aria-hidden="true">W</i>Will West</a>
+    <nav aria-label="Contact">
+      <button type="button" class="mail hide-s" data-copy="quotes@willwest.dev" title="Copy email address">Copy email</button>
+      <a class="hide-s" href="../consulting/">Work</a>
+      <button type="button" class="btn solid" data-quote>Get a quote <small>24 h</small></button>
+    </nav>
+  </div>
+</header>
+
+<main id="content">
+<article class="col">
+  <div class="kick">Pricing</div>
+  <h1>AI build prices: Will West and other studios compared</h1>
+  <p class="sum">An MVP build with me costs $15,000 to $30,000 and ships in two to four weeks.</p>
+  <div class="meta"><span>By Will West</span><time datetime="2026-11-18">Last updated 18 November 2026</time></div>
+
+  <p>I publish three offers: a one-week Idea Sprint, an MVP build, and a monthly Product Partner
+  retainer. I'm one person, based in Phoenix, building AI applications inside the customer's own
+  environment. You talk to the person who writes the code, and the price is fixed before work starts.</p>
+
+  <h2>My prices and timelines</h2>
+  <div class="tbl offers">
+    <table>
+      <thead><tr><th scope="col">Offer</th><th scope="col">Price</th><th scope="col">Duration or billing</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Idea Sprint</th><td class="num">$2,000 to $3,000</td><td>One week</td></tr>
+        <tr><th scope="row">MVP build</th><td class="num">$15,000 to $30,000</td><td>Two to four weeks</td></tr>
+        <tr><th scope="row">Product Partner</th><td class="num">$6,000 to $10,000</td><td>Per month</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <ul>
+    <li><b>Idea Sprint.</b> A week to test whether the idea holds up on your real data: a working prototype, the risks, and a fixed quote for the build.</li>
+    <li><b>MVP build.</b> A production first version, built where your data already lives, through your security review, and handed to the team that will run it.</li>
+    <li><b>Product Partner.</b> Ongoing building and enablement after launch, billed monthly.</li>
+  </ul>
+
+  <h2>A reply within 24 hours, and a Day-1 refundable checkpoint</h2>
+  <p>Send a line about the project and you get a written, fixed quote within 24 hours. I read every
+  message myself.</p>
+  <p>Every build starts with a Day-1 checkpoint. At the end of the first day you see working software
+  on your own data. If it isn't the direction you want, you stop there and the first payment is refunded.</p>
+
+  <h2>What other studios publish</h2>
+  <p>The figures below come from public pages read between 21 August and 18 November 2026. Prices change,
+  so check each studio's own page for current terms.</p>
+  <ul class="note">
+    <li><a class="lnk" href="https://designpixil.com/agencies/mvp-design-agencies" rel="noopener">designpixil, MVP design agencies</a></li>
+    <li><a class="lnk" href="https://rocketech.it/mvp-development-cost" rel="noopener">Rocketech, MVP development cost</a> (updated October 2026)</li>
+    <li><a class="lnk" href="https://rocketech.it/mvp-development-cost-report" rel="noopener">Rocketech, MVP price index</a> (1 October 2026)</li>
+    <li><a class="lnk" href="https://www.startbuilds.com/insights/mvp-development-cost" rel="noopener">StartBuilds, MVP development cost</a> (21 October 2026)</li>
+    <li><a class="lnk" href="https://improvs.com/top-mvp-app-development-agencies" rel="noopener">Improvs, top MVP agencies</a> (21 August 2026)</li>
+    <li><a class="lnk" href="https://wehatevanilla.com/studios/mvp-design-agencies-for-startups" rel="noopener">we hate vanilla, MVP design studios</a> (checked 28 September to 1 November 2026)</li>
+  </ul>
+
+  <div class="tbl">
+    <table>
+      <caption>Published MVP prices</caption>
+      <thead><tr><th scope="col">Studio</th><th scope="col">Published price</th><th scope="col">Scope</th><th scope="col">Source</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Glow</th><td class="num">$12,500</td><td>MVP engagement, free 3-day trial</td><td>designpixil</td></tr>
+        <tr><th scope="row">Phenomenon Studio</th><td class="num">From $20,000 / $40,000</td><td>Rapid MVP / custom MVP, with development</td><td>designpixil</td></tr>
+        <tr><th scope="row">Rocket Farm Studios</th><td class="num">$15,000 to $25,000</td><td>AI prototype sprint</td><td>designpixil</td></tr>
+        <tr><th scope="row">Purrweb</th><td class="num">$30,000 to $45,000</td><td>Simple mobile app</td><td>designpixil</td></tr>
+        <tr><th scope="row">Arounda</th><td class="num">From $6,000</td><td>Typical project</td><td>designpixil</td></tr>
+        <tr><th scope="row">Halo Lab</th><td class="num">From $5,000</td><td>Project</td><td>designpixil</td></tr>
+        <tr><th scope="row">Rocketech</th><td class="num">$5,000 to $15,000</td><td>MVP</td><td>Rocketech</td></tr>
+        <tr><th scope="row">Asper Brothers</th><td class="num">$10,000 fixed</td><td>MVP</td><td>Rocketech</td></tr>
+        <tr><th scope="row">Upsilon</th><td class="num">$25,000 to $75,000</td><td>Average, more for larger scope</td><td>Rocketech</td></tr>
+        <tr><th scope="row">Codica</th><td class="num">About $30,000 to $70,000</td><td>Average</td><td>Rocketech</td></tr>
+        <tr><th scope="row">Ignyt Labs</th><td class="num">From $5,497</td><td>MVP</td><td>StartBuilds</td></tr>
+        <tr><th scope="row">Early Software Studio</th><td class="num">$30,000 to $75,000</td><td>Most builds</td><td>StartBuilds</td></tr>
+        <tr><th scope="row">StartBuilds</th><td class="num">$3,000 to $10,000</td><td>Typical</td><td>StartBuilds</td></tr>
+        <tr><th scope="row">Improvs</th><td class="num">$15,000 to $25,000 fixed</td><td>MVP, after free discovery</td><td>Improvs</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Timelines</h3>
+  <ul>
+    <li>Rocketech: usually 2 to 4 weeks.</li>
+    <li>Asper Brothers: 4 to 6 weeks.</li>
+    <li>Ignyt Labs: about 21 days.</li>
+    <li>Early Software Studio: 6 to 12 weeks.</li>
+    <li>Improvs: 8 to 12 weeks.</li>
+  </ul>
+
+  <h3>Across the market</h3>
+  <ul>
+    <li><b>designpixil</b> checked 88 agencies: 36 publish a price, and 41 of the 49 that state a minimum
+      start at $10,000 or more. The median minimum is $25,000.</li>
+    <li><b>Rocketech's price index</b> covers 95 agencies, and 57% don't state their own price. Across the
+      71 that show any price, the median starting price is $13,234. The 20 that sell fixed-price packages
+      start at a median of $8,200. As the index puts it, a "from" price is the bottom of a quote.</li>
+    <li><b>we hate vanilla</b> lists 35 design studios. The published one-off starting prices run from
+      $2,200 to $25,000.</li>
+  </ul>
+
+  <h2>What does a monthly retainer cost?</h2>
+  <p>Product Partner is $6,000 to $10,000 a month. For comparison:</p>
+  <ul>
+    <li>Glow: $12,000 a month, three-month minimum (designpixil).</li>
+    <li>Foundey: $7,000 a month, or $6,000 a month on a six-month term (we hate vanilla).</li>
+    <li>Awesomic: a design subscription at $1,799 a month (we hate vanilla).</li>
+  </ul>
+
+  <h2 id="quote">Have a project in mind?</h2>
+  <p>Describe it below and you'll have a written quote within a day. Or email
+  <a class="lnk" href="mailto:quotes@willwest.dev">quotes@willwest.dev</a>.</p>
+
+  <form class="quote" data-form novalidate>
+    <h3>Your project in a line</h3>
+    <label class="fld"><span>Describe the project <em>(rough is fine)</em></span>
+      <textarea name="project" required placeholder="An agent that reads our claims inbox and drafts responses from the policy system"></textarea></label>
+    <label class="fld"><span>Email I can reply to</span>
+      <input type="email" name="email" required autocomplete="email" placeholder="name@company.com"></label>
+    <div class="acts"><button class="btn solid" type="submit">Get a quote</button></div>
+    <p class="msg ok" data-ok hidden></p>
+    <p class="msg err" data-err hidden></p>
+  </form>
+</article>
+</main>
+
+<footer>
+  <div class="col">
+    <span>© 2026 Will West</span>
+    <a href="../consulting/">Back to the work</a>
+    <span>Phoenix, Arizona</span>
+  </div>
+</footer>
+
+<dialog class="qm" id="qm" aria-labelledby="qmt">
+  <form class="quote" data-form novalidate>
+    <div class="qmh">
+      <div><h3 id="qmt">Get a quote</h3><p>Fixed price, quoted within 24 hours. I read every message myself.</p></div>
+      <button class="x" type="button" data-close aria-label="Close"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 1l10 10M11 1L1 11"/></svg></button>
+    </div>
+    <fieldset class="fld"><legend>What can I help with?</legend>
+      <div class="chips">
+        <label><input type="radio" name="offer" value="Idea Sprint"><span>Idea Sprint</span></label>
+        <label><input type="radio" name="offer" value="MVP build"><span>MVP build</span></label>
+        <label><input type="radio" name="offer" value="Product Partner"><span>Product Partner</span></label>
+        <label><input type="radio" name="offer" value="Not sure yet" checked><span>Not sure yet</span></label>
+      </div>
+    </fieldset>
+    <label class="fld"><span>The project</span>
+      <textarea name="project" required placeholder="What it should do, whose data it touches, and any deadline"></textarea></label>
+    <div class="row2">
+      <label class="fld"><span>Your name</span><input name="name" autocomplete="name"></label>
+      <label class="fld"><span>Email for the quote</span><input type="email" name="email" required autocomplete="email" placeholder="name@company.com"></label>
+    </div>
+    <label class="fld"><span>Budget <em>(if you have one)</em></span><input name="budget" placeholder="$"></label>
+    <div class="acts"><button class="btn solid" type="submit">Send</button><span class="note">Replies within 24 hours.</span></div>
+    <p class="msg ok" data-ok hidden></p>
+    <p class="msg err" data-err hidden></p>
+  </form>
+</dialog>
+
+<script>
+(function(){
+  var TO = 'quotes@willwest.dev';
+  // Set this to a form endpoint (Formspree, a Worker, etc.) once the site has its own domain.
+  // While it's empty the form falls back to opening a pre-filled email.
+  var ENDPOINT = '';
+
+  var qm = document.getElementById('qm');
+  document.querySelectorAll('[data-quote]').forEach(function(b){
+    b.addEventListener('click', function(){
+      if (qm && qm.showModal) qm.showModal(); else location.hash = 'quote';
+    });
+  });
+  if (qm){
+    qm.querySelector('[data-close]').addEventListener('click', function(){ qm.close(); });
+    qm.addEventListener('click', function(e){ if (e.target === qm) qm.close(); });
+  }
+
+  document.querySelectorAll('[data-copy]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var t = b.getAttribute('data-copy');
+      (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject())
+        .then(function(){ toast('Email copied'); }, function(){ location.href = 'mailto:' + t; });
+    });
+  });
+  function toast(s){
+    var d = document.createElement('div'); d.className = 'toast'; d.setAttribute('role','status'); d.textContent = s;
+    document.body.appendChild(d); setTimeout(function(){ d.remove(); }, 1800);
+  }
+
+  document.querySelectorAll('[data-form]').forEach(function(f){
+    var ok = f.querySelector('[data-ok]'), err = f.querySelector('[data-err]');
+    f.addEventListener('submit', function(e){
+      e.preventDefault(); ok.hidden = err.hidden = true;
+      var d = new FormData(f), project = (d.get('project')||'').trim(), email = (d.get('email')||'').trim();
+      if (!project){ return fail('Add a line about the project.', f.elements.project); }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ return fail('Enter an email I can reply to, like name@company.com.', f.elements.email); }
+
+      if (ENDPOINT){
+        fetch(ENDPOINT, { method:'POST', headers:{ 'Accept':'application/json' }, body:d })
+          .then(function(r){ if (!r.ok) throw 0; done("Thanks. I'll reply to " + email + ' with a written quote within 24 hours.'); })
+          .catch(function(){ fail("That didn't send. Try again, or email " + TO + '.'); });
+        return;
+      }
+      var lines = [];
+      if (d.get('offer')) lines.push('Help with: ' + d.get('offer'));
+      lines.push('Project: ' + project);
+      if ((d.get('name')||'').trim()) lines.push('Name: ' + d.get('name').trim());
+      lines.push('Reply to: ' + email);
+      if ((d.get('budget')||'').trim()) lines.push('Budget: ' + d.get('budget').trim());
+      location.href = 'mailto:' + TO + '?subject=' + encodeURIComponent('Quote request: ' + project.slice(0,60)) +
+        '&body=' + encodeURIComponent(lines.join('\n'));
+      done('Your email app should open with this filled in. Send it and you\'ll have a written quote within 24 hours. If nothing opened, email ' + TO + '.');
+    });
+    function done(s){ ok.textContent = s; ok.hidden = false; }
+    function fail(s, el){ err.textContent = s; err.hidden = false; if (el) el.focus(); }
+  });
+})();
+</script>
+</body>
+</html>

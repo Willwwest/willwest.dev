@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Will West — Applied AI &amp; Forward Deployed Engineering</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Forward deployed engineering and applied AI, delivered into your environment. 200+ AI applications in production across regulated and enterprise data.">
+<meta property="og:title" content="Will West — Applied AI &amp; Forward Deployed Engineering">
+<meta property="og:description" content="Getting AI systems from idea into production inside your environment — agents on governed data, through security review, owned by your team.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#08080a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2308080a'/%3E%3Ctext x='32' y='44' font-family='Helvetica,Arial' font-size='36' font-weight='700' fill='white' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --s0:#08080a; --s1:#0d0d10; --s2:#131317;
+    --hair:rgba(255,255,255,.09); --hair2:rgba(255,255,255,.055);
+    /* t3/t4 carry the small mono labels. Both must clear WCAG AA against the *lightest*
+       surface on the page, which is the hero radial's peak (#15151b) rather than --s0.
+       Measured there: t3 6.52:1, t4 4.98:1. Checking only --s0 is what left them failing. */
+    --w:#fff; --t1:#f2f2f4; --t2:#a8a8b2; --t3:#9a9aa4; --t4:#85858f;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    --gut:clamp(20px,4vw,44px); --sec:clamp(54px,5.6vw,80px); --hdr:64px;
+    /* Reading measures. Every text block picks one of these; nothing invents its own. There
+       were eleven distinct caps before, nine of them one-offs, including a 60ch block and a
+       53ch block that landed 1px apart by coincidence rather than by system.
+
+       They are in PIXELS, not ch, and that is deliberate. ch is font-relative, so one character
+       count draws a different width at every type size: a 62ch scale still put .stmt's right
+       edge at 638px and the .lede stacked directly under it at 685px. Pixels give shared edges;
+       the band check below is what keeps them typographically honest.
+
+         --m-lede   660px  the 20.5px lede and the 23px section statement. They stack, so they
+                           share an edge. 60ch and 53ch respectively.
+         --m-body   560px  16.5px body prose. 63ch.
+         --m-small  480px  14.5-15.5px body prose and the CTA line. 58-61ch.
+         --m-cell    26ch  not a reading measure — a short label in a narrow grid cell, kept
+                           off the cell edge. Stays in ch because it tracks its own type size.
+
+       Every block lands between 51 and 63 characters per line, inside the 45-75 band. Re-check
+       with that band, not by eye, if any font-size on this page changes. */
+    --m-lede:660px; --m-body:560px; --m-small:480px; --m-cell:26ch;
+    /* keyline traced round each client mark so dark-ink logos read on the page ground.
+       Cool grey rather than #fff: pure white haloes at this size and reads as a glow. */
+    --ok:#cfd2d8;
+    /* One ratio for every asymmetric two-column block, used in two orientations:
+         --split-a   narrow column first  (.cs fact rail, .cap heading)
+         --split-b   narrow column second (.med caption, .bg2 kit)
+       and one gap, so the seam falls in the same place in every section. There were four
+       ratios before — 1.3/1, .88/1.12, .42/1 and 1/.74 — which put the body prose at 33% of
+       the column in Proof and 47% in How I work. Narrow lands at 39%, main at 55%, seam at 5%. */
+    --split-a:minmax(0,.71fr) minmax(0,1fr);
+    --split-b:minmax(0,1fr) minmax(0,.71fr);
+    --split-gap:clamp(20px,4vw,54px);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  /* <picture> is only a format switch, never a layout box. Without display:contents it
+     becomes a flex child of .vid and breaks that card's space-between. And display:contents
+     promotes <source> into a flex item of its own — zero height, but it still takes a slot —
+     so it has to be explicitly hidden. */
+  picture{display:contents}
+  picture source{display:none}
+  html{scroll-behavior:smooth;scroll-padding-top:calc(var(--hdr) + 24px);-webkit-text-size-adjust:100%;
+       color-scheme:dark;scrollbar-color:#2c2c36 var(--s0);scrollbar-width:thin}
+  body{background:var(--s0);color:var(--t2);font:16.5px/1.68 var(--sans);
+       -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+  .col{width:100%;max-width:1140px;margin:0 auto;padding-inline:var(--gut)}
+  a{color:inherit;text-decoration:none}
+  .lnk{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px;
+       text-decoration-color:rgba(255,255,255,.28);transition:text-decoration-color .25s,color .25s}
+  .lnk:hover{text-decoration-color:var(--w);color:var(--w)}
+  ::selection{background:#2a2a34;color:#fff}
+  /* offset puts the ring outside the control, always on the dark page, so white is safe
+     even on the solid white button. The old violet appeared nowhere else in the palette. */
+  :focus-visible{outline:2px solid var(--w);outline-offset:3px;border-radius:2px}
+
+  .hdr{position:fixed;top:0;left:0;right:0;height:var(--hdr);z-index:50;display:flex;align-items:center;
+       transition:background .35s,border-color .35s;border-bottom:1px solid transparent}
+  .hdr.stuck{background:rgba(8,8,10,.8);backdrop-filter:blur(14px) saturate(1.4);
+       -webkit-backdrop-filter:blur(14px) saturate(1.4);border-bottom-color:var(--hair2)}
+  /* nav is the header's only content — the wordmark lives in the hero signature instead */
+  .hdr .col{display:flex;align-items:center;justify-content:flex-end}
+  .hdr nav{display:flex;gap:clamp(13px,2.2vw,28px)}
+  .hdr nav a{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--t3);transition:color .25s}
+  .hdr nav a:hover{color:var(--w)}
+
+  /* hero + stat bar */
+  .hero{position:relative;isolation:isolate;overflow:hidden;min-height:100vh;min-height:100svh;
+        display:flex;flex-direction:column;background:var(--s0)}
+  /* Asymmetric split: text on the .col grid's left edge, the photograph owning a hard-edged
+     column flush to the right viewport edge, cropped top by the viewport and bottom by the
+     stat seam — anchored on three sides, floating on none. */
+  .hwrap{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,44vw);align-items:stretch;
+        padding-left:max(var(--gut), calc((100vw - 1140px)/2 + var(--gut)))}
+  .htxt{align-self:center;max-width:660px;
+        padding:calc(var(--hdr) + clamp(28px,6vh,60px)) clamp(30px,4.5vw,72px) clamp(34px,6vh,60px) 0}
+  .hphoto{position:relative;margin:0;border-left:1px solid var(--hair)}
+  /* grade (black point at the page ground, capped highlights) is baked into the asset —
+     no CSS filter, no mask. object-position keeps the subject and his headroom. */
+  .hphoto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:45% 20%}
+  .hphoto::after{content:"";position:absolute;inset:0 0 auto 0;height:150px;pointer-events:none;
+        background:linear-gradient(180deg,rgba(8,8,10,.92) 0,rgba(8,8,10,.86) 64px,rgba(8,8,10,.3) 70%,transparent)}
+  /* nav t3 over the scrim worst case (white letterform behind) computes ~6:1 — AA at 11px */
+  /* The hero light is its own layer so it can breathe. The peak stays #15151b — the surface the
+     t3/t4 contrast numbers in :root are measured against — because opacity only ever dips below 1
+     and the grain sits at 4% overlay (worst-case lightening ~2 luminance points, re-measured). */
+  .hero::before{content:"";position:absolute;inset:-12% -6%;z-index:-1;pointer-events:none;
+        background:radial-gradient(70% 60% at 26% 34%,#15151b 0%,transparent 62%);
+        animation:breathe 10s ease-in-out 1.4s infinite}
+  @keyframes breathe{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.045);opacity:.85}}
+  .gr{position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.04;mix-blend-mode:overlay;
+        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E")}
+  /* load choreography — once, calm, the same curve as the scroll reveals; gated on .js so
+     nothing is ever hidden without script */
+  .js .htxt h1,.js .hsub,.js .sig,.js .hact,.js .hphoto,.js .bar .col>div{
+        animation:hin .75s cubic-bezier(.22,.61,.36,1) calc(.1s + var(--hd,0)*.08s) both}
+  .js .htxt h1{--hd:0}.js .hsub{--hd:1}.js .sig{--hd:2}
+  .js .hact{--hd:3}.js .hphoto{--hd:0}
+  .js .bar .col>div{--hd:4}.js .bar .col>div:nth-child(2){--hd:5}
+  .js .bar .col>div:nth-child(3){--hd:6}.js .bar .col>div:nth-child(4){--hd:7}
+  @keyframes hin{from{opacity:0;transform:translateY(12px);filter:blur(6px)}
+                 to{opacity:1;transform:none;filter:blur(0)}}
+  /* The headline is a deliberate three-line stack (see the .hbr breaks in the markup). The clamp
+     max is set so the longest line — "in production, across" — clears the 660px text column
+     minus its right padding at 1440. Lengthen the headline and this has to be re-measured, not
+     left to wrap ragged: the stack is the hero composition's anchor. */
+  h1{font-size:clamp(30px,3.9vw,56px);line-height:1.06;letter-spacing:-.03em;font-weight:700;
+     color:var(--w);text-wrap:balance}
+  /* vertical luminance falloff on display type — lit, not printed. color stays as fallback
+     where background-clip:text is unsupported. */
+  h1{background:linear-gradient(180deg,#fff 45%,rgba(255,255,255,.78));
+     -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .hsub{margin-top:clamp(18px,3vh,28px);font-size:clamp(16px,1.32vw,18.5px);line-height:1.62;
+        color:var(--t2);max-width:var(--m-lede)}
+  /* The name lives here now rather than only in the sticky header, so the hero introduces the
+     person as well as the number. Mono caps, so it reads as a nameplate rather than a caption;
+     the header carries nav only. */
+  .sig{margin-top:clamp(22px,3.8vh,34px)}
+  .signame{font-family:var(--mono);font-size:clamp(15px,1.35vw,19px);letter-spacing:.17em;
+        text-transform:uppercase;font-weight:600;color:var(--w);line-height:1.2}
+  /* Default state is every discipline on one line, dot-separated. That is what no-JS gets, and
+     what reduced-motion falls back to; the rotator below is the enhancement, not the baseline. */
+  .roles{margin-top:clamp(9px,1.1vh,13px);font-family:var(--mono);
+        font-size:clamp(12.5px,1.06vw,15px);letter-spacing:.12em;text-transform:uppercase;
+        font-weight:600;color:var(--t2);line-height:1.5;
+        display:flex;flex-wrap:wrap;align-items:baseline}
+  .roles .rl{white-space:nowrap}
+  .roles .rl:not(:last-child)::after{content:"·";margin:0 10px;color:var(--t4)}
+  /* One at a time, in a slot tall enough that nothing below it moves. Absolutely positioned so
+     the four phrases share the same origin regardless of width. */
+  .js .roles{display:block;position:relative;height:1.5em}
+  .js .roles .rl{position:absolute;left:0;top:0;white-space:nowrap;opacity:0;
+        animation:roll 12s cubic-bezier(.22,.61,.36,1) infinite}
+  .js .roles .rl:not(:last-child)::after{content:none}
+  .js .roles .rl:nth-child(2){animation-delay:3s}
+  .js .roles .rl:nth-child(3){animation-delay:6s}
+  .js .roles .rl:nth-child(4){animation-delay:9s}
+  /* WCAG 2.2.2 wants a way to stop content that moves on its own. Hover or tab into the line
+     and the cycle holds wherever it is. */
+  .js .roles:hover .rl,.js .roles:focus-within .rl{animation-play-state:paused}
+  /* One phrase owns 25% of the 12s cycle = 3s: in over .84s, held 2.16s, out over .84s.
+     The fade-out runs 25%-32%, which in absolute time is exactly when the next phrase runs its
+     own 0%-7% fade-in — the two cross with their opacities summing to about 1 the whole way.
+     An earlier version ended the fade at 27% and started the next at 25%, which left a ~.2s
+     dip where the brightest phrase was under half strength and the line read as a flicker. */
+  @keyframes roll{
+    0%{opacity:0;transform:translateY(7px)}
+    7%,25%{opacity:1;transform:none}
+    32%,100%{opacity:0;transform:translateY(-7px)}
+  }
+  .hact{margin-top:clamp(22px,3.6vh,34px);display:flex;flex-wrap:wrap;gap:12px 26px;align-items:center}
+  .hact .lnk{font-size:14.5px;color:var(--t2)}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:12px 22px;border-radius:999px;
+       font-size:14.5px;font-weight:600;
+       transition:background .25s,border-color .25s,box-shadow .25s,transform .25s,color .25s}
+  .btn.solid{background:var(--w);color:#0a0a0c;
+       box-shadow:inset 0 -1px 0 rgba(0,0,0,.12),0 10px 28px -14px rgba(255,255,255,.3)}
+  .btn.solid:hover{background:#d9d9e0;transform:translateY(-1px);
+       box-shadow:inset 0 -1px 0 rgba(0,0,0,.12),0 12px 34px -14px rgba(255,255,255,.45)}
+  .btn.ghost{border:1px solid var(--hair);color:var(--t1);
+       box-shadow:inset 0 1px 0 rgba(255,255,255,.07)}
+  .btn.ghost:hover{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.04)}
+  .bar{border-block:1px solid var(--hair)}
+  .bar .col{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,2.4vw,34px);
+       padding-block:clamp(15px,2.2vh,21px)}
+  .bar b{display:block;color:var(--w);font-size:clamp(19px,1.7vw,24px);font-weight:650;
+       letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+  .bar b i{font-style:normal;font-size:max(11px,.5em);margin-left:2px}
+  .bar p{margin-top:8px;font-size:12.5px;line-height:1.45;color:var(--t3);max-width:var(--m-cell)}
+  .bar .col>div+div{border-left:1px solid var(--hair2);padding-left:clamp(14px,2.4vw,34px)}
+
+  section{padding-block:var(--sec)}
+  .lift{background:linear-gradient(180deg,#0e0e12,#0c0c0f);border-block:1px solid var(--hair2);
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
+  /* Section opener. Every section enters the SAME way: a full-width rule, its number, and its
+     name at readable size. Internals below may differ per section; the entry never does. This is
+     the landmark the page lacked - an 11px label is not a chapter break, and without one the page
+     reads as a single endless scroll. Numbered 01-07 at first: removed, because the method
+     section already numbers its own two blocks, so "02" sat directly above "01" and read as a
+     contradiction. The rule plus the name carries the break on its own. */
+  .op{border-top:1px solid var(--hair);padding-top:clamp(20px,2.4vw,30px);
+      margin-bottom:clamp(10px,1.3vw,15px)}
+  .op h2{font-size:clamp(24px,3.1vw,40px);line-height:1.12;font-weight:660;letter-spacing:-.022em;
+      color:var(--w);text-wrap:balance}
+  /* the section's argument, where it has one - deliberately larger than the section's own name */
+  .stmt{font-size:clamp(18px,1.9vw,23px);line-height:1.45;font-weight:600;letter-spacing:-.012em;
+      color:var(--w);text-wrap:balance;max-width:var(--m-lede);
+      margin-bottom:clamp(26px,3vw,42px)}
+  /* h2 now lives only inside .op; the display sizes moved to .stmt above, capped below the
+     h1's 56px so a section's argument never outranks the page headline. */
+  .lede{margin-top:clamp(22px,3.2vw,34px);font-size:clamp(16.5px,1.5vw,20.5px);line-height:1.6;color:var(--t2);max-width:var(--m-lede)}
+  .lede + .lede{margin-top:18px}
+  /* Emphasis in body prose must lift COLOUR as well as weight: body is --t2 grey (#a8a8b2)
+     and bold-alone at 16.5px on a dark ground is close to invisible. Every prose context
+     that can carry a <b> belongs in this selector - .cap p and .thlist p were missing and
+     their emphasis rendered flat. Add new prose blocks here when you add them. */
+  .lede b,.step p b,.cap p b,.thlist p b,.medtxt p b{color:var(--w);font-weight:600}
+
+  /* proof */
+  .med{display:grid;grid-template-columns:var(--split-b);gap:var(--split-gap);align-items:center}
+  .vid{position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;border:1px solid var(--hair);
+       display:flex;flex-direction:column;justify-content:space-between;padding:clamp(17px,2.3vw,25px);
+       background:#0b0b0f;isolation:isolate;box-shadow:0 12px 32px -20px rgba(0,0,0,.7);
+       transition:border-color .4s,transform .4s,box-shadow .4s}
+  .vid .shot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;
+       opacity:.95;transition:opacity .5s,transform .6s}
+  .vid::after{content:"";position:absolute;inset:0;z-index:-1;
+       box-shadow:inset 0 1px 0 rgba(255,255,255,.09);
+       background:linear-gradient(172deg,rgba(8,8,12,.48) 0%,rgba(8,8,12,.34) 34%,rgba(8,8,12,.62) 68%,rgba(8,8,12,.92) 100%)}
+  .vid:hover .shot{opacity:1;transform:scale(1.03)}
+  .vid:hover{border-color:rgba(255,255,255,.34);transform:translateY(-3px);box-shadow:0 18px 50px -22px rgba(0,0,0,.9)}
+  .vid .yt{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--t2);display:flex;align-items:center;gap:9px}
+  .vid .yt b{display:inline-grid;place-items:center;width:26px;height:18px;border-radius:5px;background:#e5343f;font-size:0}
+  .vid .yt b::after{content:"";border-left:6px solid #fff;border-top:4px solid transparent;border-bottom:4px solid transparent;margin-left:2px}
+  .vid .mid{display:flex;align-items:center;gap:16px}
+  .vid .mid i{flex:none;display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.95);transition:transform .35s}
+  .vid:hover .mid i{transform:scale(1.09)}
+  .vid .mid svg{width:21px;height:21px;margin-left:3px;fill:#0a0a0c}
+  .vid .mid span{color:var(--w);font-size:clamp(15px,1.45vw,18.5px);font-weight:620;letter-spacing:-.016em;line-height:1.3}
+  .vid .foot{font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--t3)}
+  code{font-family:var(--mono);font-size:.88em;color:var(--t1);background:rgba(255,255,255,.06);
+       padding:1px 4px;border-radius:4px;margin-inline:-1px}
+  figure.ev{margin-top:clamp(26px,3.2vw,40px);border:1px solid var(--hair);border-radius:12px;
+       overflow:hidden;background:var(--s2);max-width:400px;box-shadow:0 12px 32px -20px rgba(0,0,0,.65);
+       transition:border-color .35s,transform .35s}
+  figure.ev:hover{border-color:rgba(255,255,255,.34);transform:translateY(-2px)}
+  figure.ev a{display:block}
+  figure.ev img{display:block;width:100%;height:auto}
+  figure.ev figcaption{padding:12px 16px;border-top:1px solid var(--hair2);font-family:var(--mono);
+       font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--t4)}
+  .medtxt h3{color:var(--w);font-size:clamp(20px,2.2vw,29px);font-weight:660;letter-spacing:-.022em;line-height:1.18;margin-bottom:15px;text-wrap:balance}
+  .medtxt p{font-size:15.5px;line-height:1.66;color:var(--t2);max-width:var(--m-small)}
+  .medtxt .more{margin-top:21px;display:flex;flex-wrap:wrap;gap:10px}
+  .pod{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:clamp(15px,2.5vw,28px);
+       margin-top:clamp(22px,3vw,36px);padding:clamp(17px,2.1vw,25px) clamp(17px,2.3vw,28px);border-radius:14px;
+       border:1px solid var(--hair);background:linear-gradient(120deg,#0f1a13 0%,#0d0d10 46%,#08080a 100%);
+       box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 12px 32px -20px rgba(0,0,0,.7);
+       transition:border-color .4s,transform .4s,box-shadow .4s}
+  .pod:hover{border-color:rgba(29,185,84,.5);transform:translateY(-2px);
+       box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 44px -24px rgba(0,0,0,.9),
+                  0 0 0 1px rgba(29,185,84,.12)}
+  .pod .ic{flex:none;display:grid;place-items:center;width:50px;height:50px;border-radius:50%;
+       background:radial-gradient(circle at 34% 28%,#2ee06a 0%,#1DB954 58%,#17A449 100%);
+       box-shadow:0 0 0 1px rgba(29,185,84,.35),0 6px 26px -6px rgba(29,185,84,.45);
+       transition:transform .35s,box-shadow .35s}
+  .pod:hover .ic{transform:scale(1.07);
+       box-shadow:0 0 0 1px rgba(29,185,84,.5),0 8px 34px -6px rgba(29,185,84,.62)}
+  .pod .ic svg{width:19px;height:19px;margin-left:3px;fill:#06170c}
+  .pod .show{font-family:var(--mono);font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:#1DB954;display:block;margin-bottom:7px}
+  .pod h3{color:var(--w);font-size:clamp(15.5px,1.5vw,19px);font-weight:630;letter-spacing:-.017em;line-height:1.3;text-wrap:balance}
+  .pod .with{display:block;margin-top:10px;font-size:14.5px;color:var(--t2);line-height:1.55;max-width:var(--m-small)}
+  .pod .rt{text-align:right;font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--t4);line-height:1.9;white-space:nowrap}
+  .pod .rt i{font-style:normal;color:#1DB954}
+
+  /* method */
+  .cap{display:grid;grid-template-columns:var(--split-a);gap:var(--split-gap);
+       padding-block:clamp(28px,3.6vw,42px);border-top:1px solid var(--hair2);align-items:start}
+  .cap:first-of-type{border-top:1px solid var(--hair)}
+  .cap h3{position:sticky;top:calc(var(--hdr) + 26px);color:var(--w);font-size:clamp(19px,2vw,26px);font-weight:650;letter-spacing:-.021em;line-height:1.2;text-wrap:balance}
+  .cap p{font-size:16.5px;line-height:1.66;color:var(--t2);max-width:var(--m-body)}
+  .cap p + p{margin-top:11px}
+
+  /* field strip — the enablement claims above it, photographed. Same grade family as
+     figure.port; cells are 4:5 via CSS so one source file serves every layout. */
+  .fstrip{margin-top:clamp(30px,4.2vw,48px);display:grid;grid-template-columns:repeat(5,1fr);
+       gap:clamp(10px,1.2vw,14px)}
+  .fstrip figure{border:1px solid var(--hair);border-radius:12px;overflow:hidden;background:var(--s2);
+       box-shadow:0 12px 32px -20px rgba(0,0,0,.65);display:flex;flex-direction:column}
+  /* captions run one or two lines; growing the caption keeps the card bottoms on one rule */
+  .fstrip figcaption{flex:1}
+  .fstrip img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;
+       transition:transform .4s}
+  /* thumbs now ship in colour, the same grade the lightbox opens */
+  .fstrip .pic{display:block}
+  .fstrip figure{transition:border-color .35s,transform .35s}
+  .fstrip figure:hover{border-color:rgba(255,255,255,.34);transform:translateY(-2px)}
+  .fstrip .pic:hover img{transform:scale(1.04)}
+  .fstrip figcaption{padding:10px 12px;border-top:1px solid var(--hair2);font-family:var(--mono);
+       font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--t4);line-height:1.5}
+
+  /* case study — lives inside #proof, directly under the keynote card it deep-dives */
+  .cs{display:grid;grid-template-columns:var(--split-a);gap:var(--split-gap);
+      align-items:start;margin-top:clamp(44px,5.5vw,72px)}
+  .cs .side{position:sticky;top:calc(var(--hdr) + 26px)}
+  .side .tag{font-family:var(--mono);font-size:12.5px;letter-spacing:.03em;color:var(--t3);
+       display:block;padding-block:9px;border-top:1px solid var(--hair2)}
+  .side .tag:first-child{border-top:1px solid var(--hair)}
+  .side .tag b{display:block;color:var(--w);font-weight:600;font-size:14.5px;letter-spacing:-.01em;
+       text-transform:none;font-family:var(--sans);margin-top:3px}
+  .step{padding-block:clamp(18px,2.2vw,26px);border-top:1px solid var(--hair2)}
+  .step:first-child{border-top:none;padding-top:0}
+  .step em{font-style:normal;display:block;font-family:var(--mono);font-size:12.5px;letter-spacing:.03em;
+       color:var(--t3);margin-bottom:10px}
+  .step p{font-size:16.5px;line-height:1.68;color:var(--t2);max-width:var(--m-body)}
+  .step p + p{margin-top:12px}
+  /* The single mid-page CTA. It used a border-top rule, which is now the section-opener's
+     device - mid-section it read as "a new section starts here". It is a panel instead, so it
+     reads as a call-out rather than a break. space-between fills the measure; the old 34ch cap
+     wrapped the line while half the row sat empty. */
+  .midcta{margin-top:clamp(38px,5vw,64px);
+       display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+       gap:18px 32px;padding:clamp(20px,2.6vw,28px) clamp(22px,3vw,34px);
+       border:1px solid var(--hair);border-radius:14px;
+       background:linear-gradient(120deg,#141418 0%,#0e0e12 58%,#0a0a0d 100%);
+       box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 12px 32px -22px rgba(0,0,0,.7)}
+  .midcta p{font-size:clamp(16px,1.6vw,20px);color:var(--w);font-weight:600;letter-spacing:-.018em;max-width:var(--m-small);text-wrap:balance}
+  .midcta .btn{flex:none}
+
+  /* built for */
+  /* The one asymmetric grid that does not take --split-a: its right column is a logo wall,
+     sized by the marks in it, and the shared ratio would cost it 200px and wrap the five-mark
+     rows. The label column is sized to --m-cell instead. */
+  .sect{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);gap:12px clamp(20px,4vw,46px);
+        padding-block:clamp(22px,2.6vw,32px);border-top:1px solid var(--hair2);align-items:center}
+  .sect:first-of-type{border-top:1px solid var(--hair)}
+  .sect dt span{font-size:16.5px;font-weight:640;letter-spacing:-.012em;color:var(--w);display:block}
+  .sect dt em{font-style:normal;display:block;margin-top:8px;font-size:13.2px;line-height:1.5;color:var(--t4);max-width:var(--m-cell)}
+  .sect dd{display:flex;flex-wrap:wrap;align-items:center;gap:clamp(16px,2.2vw,22px) clamp(24px,3vw,38px)}
+  /* Client marks, in full brand colour. Heights are set per logo by optical weight, not by
+     bounding box, so a wide wordmark and a tall shield read as equal.
+
+     Each sits on a light chip, and that is a requirement rather than a style choice: eleven of
+     the eighteen are dark ink drawn for white paper (Fogo measures 0.01 ink luminance, Alchemer
+     0.11, Seattle Times 0.13) and are invisible on this page's ground, and three more are a
+     colour symbol with a dark wordmark that half-vanishes, which reads as a broken image. The
+     chip gives every mark the background it was designed for. CTI Foods and Fort Wayne Metals
+     are reverse lockups and are inverted at build time — see tools/build-logos-color.js.
+
+     The chip is #f4f4f6 rather than pure white: at this size a field of #fff chips on near-black
+     glares, and the eighth of a stop costs nothing in brand fidelity. */
+  /* Full brand colour on the page ground, no plate. Eleven of the eighteen are dark ink drawn
+     for white paper (Fogo measures 0.01 ink luminance, Alchemer 0.11, Seattle Times 0.13) and
+     would be invisible here, so each mark carries a 1px white outline traced around its own
+     silhouette. Four chained drop-shadows, one per direction: each shadow applies to the result
+     of the last, so the four together close the outline round curves and diagonals.
+
+     Deliberately a CSS filter rather than a baked-in stroke. These ship at 88px tall and display
+     between 17 and 40px, so a stroke drawn into the asset lands at a third of a pixel after the
+     downscale and turns to mush. The filter runs on the rendered element, so 1px is 1px. */
+  .lg{height:var(--h,24px);width:auto;flex:none;display:block;
+       filter:drop-shadow(.75px 0 0 var(--ok)) drop-shadow(-.75px 0 0 var(--ok))
+              drop-shadow(0 .75px 0 var(--ok)) drop-shadow(0 -.75px 0 var(--ok))}
+  /* These six read on the page ground unaided — 0% of their ink falls under 2.2:1 against it.
+     Four are bright colour marks; CTI Foods and Fort Wayne Metals are white lockups that the
+     keyline was quietly inflating. Re-measure with the method in README before editing this
+     list; it is not a taste call. */
+  .lg[data-b="cisco"],.lg[data-b="omnicom"],.lg[data-b="regions"],
+  .lg[data-b="yum"],.lg[data-b="cti"],.lg[data-b="fwm"]{filter:none}
+  .lg[data-b="alchemer"]{--h:23.5px} .lg[data-b="capsa"]{--h:30.5px}
+  .lg[data-b="cisco"]{--h:38px}      .lg[data-b="concentrix"]{--h:23.5px}
+  .lg[data-b="cti"]{--h:30.5px}      .lg[data-b="fidelity"]{--h:29.5px}
+  .lg[data-b="fogo"]{--h:24.5px}     .lg[data-b="fwm"]{--h:30.5px}
+  .lg[data-b="manulife"]{--h:28.5px} .lg[data-b="omnicom"]{--h:20px}
+  .lg[data-b="regions"]{--h:26px}    .lg[data-b="roberthalf"]{--h:23.5px}
+  .lg[data-b="seattletimes"]{--h:24.5px} .lg[data-b="sixflags"]{--h:30.5px}
+  .lg[data-b="tamu"]{--h:32px}       .lg[data-b="ups"]{--h:47px}
+  .lg[data-b="usbank"]{--h:29.5px}   .lg[data-b="yum"]{--h:35px}
+  .bfnote{margin-top:clamp(26px,3.4vw,42px);font-size:14.5px;color:var(--t3);max-width:var(--m-small)}
+
+  /* thesis */
+  .thlist{margin-top:clamp(28px,3.6vw,44px);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(18px,2.6vw,34px)}
+  .thlist div{border-top:1px solid var(--hair);padding-top:18px}
+  .thlist strong{display:block;color:var(--w);font-size:16.5px;font-weight:640;letter-spacing:-.016em;margin-bottom:9px}
+  .thlist p{font-size:14.5px;line-height:1.6;color:var(--t2);max-width:var(--m-small)}
+
+  /* before this — the career rail. One horizontal scroller, oldest seat first. Thumbs are
+     plain links to the full image; script upgrades them to the lightbox dialog. Cards without
+     a photo yet simply end at the body — drop a photo in and the slot exists. */
+  /* Background: the lede holds the measure, the kit fills the column that was empty beside it.
+     One rule across the top so neither column starts unanchored. */
+  .bg2{display:grid;grid-template-columns:var(--split-b);gap:var(--split-gap);
+       align-items:start;border-top:1px solid var(--hair);
+       padding-top:clamp(20px,2.6vw,30px);margin-top:clamp(24px,3.4vw,38px)}
+  .bg2 .lede{margin-top:0}
+  .side.kit .tag:first-child{border-top:none;padding-top:0}
+  .side.kit .tag b{font-family:var(--mono);font-weight:500;font-size:13px;letter-spacing:.02em;
+       line-height:1.8;margin-top:5px}
+  /* Registering them makes the fade animate in and out instead of popping. Unsupported ->
+     still a working custom property, just without the transition. */
+  @property --mL{syntax:"<length>";inherits:false;initial-value:0px}
+  @property --mR{syntax:"<length>";inherits:false;initial-value:0px}
+  .tl{margin-top:clamp(30px,4.2vw,48px);overflow-x:auto;padding-bottom:14px;scroll-snap-type:x proximity;
+      --mL:0px;--mR:0px;transition:--mL .28s ease,--mR .28s ease;
+      -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 var(--mL),#000 calc(100% - var(--mR)),transparent 100%);
+      mask-image:linear-gradient(90deg,transparent 0,#000 var(--mL),#000 calc(100% - var(--mR)),transparent 100%)}
+  .tl ol{list-style:none;position:relative;display:grid;grid-auto-flow:column;
+      grid-auto-columns:min(280px,74vw);gap:clamp(18px,2.4vw,28px);padding-top:21px}
+  .tl ol::before{content:"";position:absolute;top:3px;left:0;right:0;height:1px;background:var(--hair)}
+  .tl li{position:relative;display:flex;flex-direction:column;scroll-snap-align:start}
+  /* the dot sits on the ol's rail line (top:3px), which is 18px above each card's top */
+  .tl li::before{content:"";position:absolute;top:-21px;left:0;width:7px;height:7px;border-radius:50%;background:var(--t4)}
+  .tl .era{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--t4)}
+  .tl strong{display:block;margin-top:9px;color:var(--w);font-size:16.5px;font-weight:640;letter-spacing:-.016em;line-height:1.3}
+  .tl p{margin-top:8px;margin-bottom:16px;font-size:14.5px;line-height:1.6;color:var(--t2)}
+  .tl .pic{margin-top:auto;display:block;border:1px solid var(--hair);border-radius:12px;overflow:hidden;
+      background:var(--s2);box-shadow:0 12px 32px -20px rgba(0,0,0,.65);
+      transition:border-color .35s,transform .35s}
+  .tl .pic:hover{border-color:rgba(255,255,255,.34);transform:translateY(-2px)}
+  /* Colour at rest, same as the field strip. Both sets are asserted identical in
+     tools/check-render.js so they cannot drift apart again. */
+  .tl .pic img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;
+      transition:transform .4s}
+  .tl .pic:hover img{transform:scale(1.04)}
+
+  /* lightbox — native dialog; without script (or without dialog support) thumbs stay links */
+  /* margin:auto restores the UA centering the global margin reset removed */
+  .lb{margin:auto;border:1px solid var(--hair);border-radius:14px;background:var(--s1);padding:0;
+      max-width:min(940px,94vw);box-shadow:0 30px 80px -30px rgba(0,0,0,.9)}
+  .lb::backdrop{background:rgba(5,5,8,.85);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+  .lb img{display:block;max-width:100%;max-height:78vh;width:auto;height:auto}
+  .lb figcaption{display:flex;align-items:center;justify-content:space-between;gap:14px;
+      padding:12px 16px;border-top:1px solid var(--hair2);font-family:var(--mono);
+      font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--t3)}
+  .lbx{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;
+      border:1px solid var(--hair);background:none;cursor:pointer;color:var(--t2);
+      transition:border-color .25s,color .25s}
+  .lbx:hover{border-color:rgba(255,255,255,.4);color:var(--w)}
+  .lbx svg{width:12px;height:12px;stroke:currentColor;stroke-width:1.6;fill:none}
+
+  /* contact */
+  /* the closing light echoes the opening one. Peak #111117 is darker than the hero peak, so the
+     t3/t4 labels measured in :root stay above AA here. */
+  .ct{padding-block:clamp(90px,12vw,156px);
+      background:radial-gradient(56% 46% at 50% 16%,#111117 0%,transparent 62%)}
+  .ct .want{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,2.6vw,32px);
+       margin-bottom:clamp(38px,5vw,64px)}
+  .ct .want div{border-top:1px solid var(--hair);padding-top:16px}
+  .ct .want strong{display:block;color:var(--w);font-size:15.5px;font-weight:630;margin-bottom:7px;letter-spacing:-.014em}
+  .ct .want p{font-size:14.5px;line-height:1.58;color:var(--t2)}
+  .ct .big{display:inline-block;font-size:clamp(24px,4.4vw,56px);font-weight:700;letter-spacing:-.032em;
+       line-height:1.1;color:var(--w);word-break:break-word;border-bottom:2px solid rgba(255,255,255,.22);
+       padding-bottom:6px;transition:border-color .3s}
+  .ct .big:hover{border-bottom-color:var(--w)}
+  .ct .sub{margin-top:clamp(24px,3.2vw,38px);display:flex;flex-wrap:wrap;gap:14px 30px;color:var(--t2);font-size:15.5px}
+  .ct .loc{margin-top:19px;font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--t4)}
+  footer{border-top:1px solid var(--hair2);padding-block:26px 46px}
+  footer .col{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer span{font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--t4)}
+
+  .js .rv{opacity:0;transform:translateY(20px);
+          transition:opacity .75s cubic-bezier(.22,.61,.36,1),transform .75s cubic-bezier(.22,.61,.36,1)}
+  .js .rv.in{opacity:1;transform:none}
+  /* siblings that enter together arrive in order, on the same curve */
+  .js .sect.rv:nth-of-type(2){transition-delay:.07s}.js .sect.rv:nth-of-type(3){transition-delay:.14s}
+  .js .sect.rv:nth-of-type(4){transition-delay:.21s}.js .sect.rv:nth-of-type(5){transition-delay:.28s}
+  .js .cap.rv:nth-of-type(2){transition-delay:.08s}
+  .js .rv .thlist>div,.js .rv .want>div,.js .rv.fstrip>figure{opacity:0;transform:translateY(14px);
+          transition:opacity .6s cubic-bezier(.22,.61,.36,1) var(--d,0s),transform .6s cubic-bezier(.22,.61,.36,1) var(--d,0s)}
+  .js .rv.in .thlist>div,.js .rv.in .want>div,.js .rv.fstrip.in>figure{opacity:1;transform:none}
+  .thlist>div:nth-child(2),.want>div:nth-child(2){--d:.09s}
+  .want>div:nth-child(3){--d:.18s}
+  .fstrip>figure:nth-child(2){--d:.08s}.fstrip>figure:nth-child(3){--d:.16s}
+  .fstrip>figure:nth-child(4){--d:.24s}.fstrip>figure:nth-child(5){--d:.32s}
+  /* their top rules draw in with them; the border stays for no-JS visitors */
+  .js .thlist>div,.js .ct .want>div{border-top-color:transparent;position:relative}
+  .js .thlist>div::before,.js .ct .want>div::before{content:"";position:absolute;top:-1px;left:0;
+          right:0;height:1px;background:var(--hair);transform:scaleX(0);transform-origin:left;
+          transition:transform .8s cubic-bezier(.22,.61,.36,1) calc(var(--d,0s) + .1s)}
+  .js .rv.in .thlist>div::before,.js .rv.in .want>div::before{transform:scaleX(1)}
+  .hdr nav a[aria-current]{color:var(--w)}
+
+
+  /* Same three lines as before, but a longer sentence in them, so the short-viewport steps
+     come down slightly with the base clamp rather than staying where the old headline left them. */
+  @media (max-height:820px) and (min-width:901px){
+    .htxt{padding-top:calc(var(--hdr) + 16px);padding-bottom:24px}
+    h1{font-size:clamp(30px,3.7vw,46px)}
+    .hsub{margin-top:16px;font-size:15.5px}
+    .sig{margin-top:22px}
+    .roles{letter-spacing:.1em}
+    /* the rotator keeps them one-up, so no wrapping to design around; the static fallbacks below
+       900px do wrap, and the dot separators carry it */
+    .js .roles{height:1.5em}
+    .hact{margin-top:20px}
+    .bar .col{padding-block:12px}
+    .bar p{margin-top:5px;font-size:12px}
+  }
+  @media (max-height:680px) and (min-width:901px){
+    h1{font-size:clamp(28px,3.2vw,38px)}
+    .hsub{display:none}
+  }
+  @media(max-width:900px){
+    .hero{min-height:auto}
+    .hwrap{grid-template-columns:1fr;padding-left:0}
+    .htxt{max-width:none;padding:calc(var(--hdr) + clamp(22px,5vh,40px)) var(--gut) 28px}
+    .hphoto{border-left:none;border-top:1px solid var(--hair2);height:min(62vh,470px)}
+    .hbr{display:none}
+    .bar .col{grid-template-columns:repeat(2,1fr);gap:24px 18px}
+    .bar .col>div+div{border-left:none;padding-left:0}
+    .bar .col>div:nth-child(even){border-left:1px solid var(--hair2);padding-left:16px}
+    .med,.cap,.cs{grid-template-columns:1fr;gap:16px}
+    .bg2{grid-template-columns:1fr;gap:22px}
+    .side.kit .tag:first-child{border-top:1px solid var(--hair2);padding-top:9px}
+    /* single column here, so the label has nothing to travel alongside - pinned, it would
+       just sit on top of the prose it belongs to */
+    .cs .side,.cap h3{position:static}
+    .thlist,.ct .want{grid-template-columns:1fr;gap:20px}
+    .fstrip{grid-template-columns:repeat(2,1fr)}
+    /* the hall shot closes the strip full-width; wide it needs a wide frame */
+    .fstrip figure:last-child{grid-column:1/-1}
+    .fstrip figure:last-child img{aspect-ratio:16/10}
+    .sect{grid-template-columns:1fr;gap:10px}
+    .sect dt{padding-top:0}
+    .hdr nav a:nth-child(2){display:none}
+  }
+  @media(max-width:760px){
+    .pod{grid-template-columns:auto minmax(0,1fr);gap:14px 16px}
+    .pod .rt{grid-column:1/-1;text-align:left;white-space:normal}
+  }
+  @media(max-width:420px){ .lg{height:calc(var(--h,24px) * .86)} }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .js .rv{opacity:1;transform:none;transition:none}
+    /* Pseudo-elements animate too (the hero glow lives on ::before), and delays hide content
+       just as well as durations do — zero all of it, everywhere, and clamp loops to one run. */
+    *,::before,::after{transition-duration:.01ms!important;animation-duration:.01ms!important;
+        transition-delay:0s!important;animation-delay:0s!important;animation-iteration-count:1!important}
+    /* the child-stagger and self-drawing-rule states must never depend on JS reaching the
+       reveal path — restore them here outright */
+    .js .rv .thlist>div,.js .rv .want>div,.js .rv.fstrip>figure{opacity:1;transform:none;transition:none}
+    .js .thlist>div,.js .ct .want>div{border-top-color:var(--hair)}
+    .js .thlist>div::before,.js .ct .want>div::before{content:none}
+    /* The rotator keeps running here, on a flattened keyframe. This setting is aimed at
+       movement — slides, parallax, zoom — and an opacity cross-fade is the standard substitute
+       for those, not a thing to remove. So the translateY goes, the cycle stretches from 12s to
+       14.4s, and hover/focus still pauses it. Collapsing to the static row instead (the first
+       version of this) meant anyone with the OS toggle on never saw the rotation at all.
+       Every declaration needs !important at a specificity above the blanket * rule six lines
+       up, which would otherwise clamp the duration to .01ms and the loop to a single pass. */
+    .js .roles .rl{animation-name:rollflat!important;animation-duration:14.4s!important;
+        animation-timing-function:linear!important;animation-iteration-count:infinite!important;
+        animation-fill-mode:both!important;animation-delay:0s!important;transform:none!important}
+    .js .roles .rl:nth-child(2){animation-delay:3.6s!important}
+    .js .roles .rl:nth-child(3){animation-delay:7.2s!important}
+    .js .roles .rl:nth-child(4){animation-delay:10.8s!important}
+  }
+  /* opacity only — the sibling of @keyframes roll with the movement taken out */
+  @keyframes rollflat{
+    0%{opacity:0}
+    7%,25%{opacity:1}
+    32%,100%{opacity:0}
+  }
+</style>
+</head>
+<body>
+
+<header class="hdr" id="hdr">
+  <div class="col">
+    <nav>
+      <a href="#proof">Proof</a>
+      <a href="#method">How I work</a>
+      <a href="#built">Industries</a>
+      <a href="../pricing/">Pricing</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero" id="top">
+  <div class="gr" aria-hidden="true"></div>
+  <div class="hwrap">
+    <div class="htxt">
+      <h1>200+ AI applications<br class="hbr"> in production, across<br class="hbr"> 100+ enterprises.</h1>
+      <p class="hsub">Inside banks, insurers and universities, most of them within the last year.
+      The work is building where the data already lives, getting it through security review, and
+      handing it to the team that will run it.</p>
+      <div class="sig">
+        <p class="signame">Will West</p>
+        <p class="roles" aria-label="Enterprise AI enablement, app deployment, departmental evolution, customer growth">
+          <span class="rl">Enterprise AI Enablement</span><span class="rl">App Deployment</span><span class="rl">Departmental Evolution</span><span class="rl">Customer Growth</span>
+        </p>
+      </div>
+      <div class="hact">
+        <a class="btn solid" href="mailto:quotes@willwest.dev">Get in touch</a>
+        
+        <a class="lnk" href="https://www.linkedin.com/in/westwill">LinkedIn ↗</a>
+      </div>
+    </div>
+    <figure class="hphoto">
+      <picture>
+          <source type="image/avif" srcset="../assets/portrait-640.c06d48e2.avif 640w, ../assets/portrait-1137.8e4d8087.avif 1137w" sizes="(max-width:900px) 100vw, 44vw">
+          <img src="../assets/portrait-1137.fd8e7c0e.jpg" alt="Will West" width="1137" height="1365" fetchpriority="high" decoding="async">
+        </picture>
+    </figure>
+  </div>
+  <div class="bar">
+    <div class="col">
+      <div><b><span>67</span></b><p>people in a delivery practice built from zero</p></div>
+      <div><b><span>100s</span></b><p>trained, across departments and customer teams</p></div>
+      <div><b><span>12</span></b><p>industries, from banking to higher education</p></div>
+      <div><b><span>4</span><i> wks</i></b><p>first conversation to production</p></div>
+    </div>
+  </div>
+</div>
+
+<section id="proof">
+  <div class="col">
+    <div class="op"><h2>Proof</h2></div>
+    <p class="stmt">A keynote build, a pipeline audit, and a podcast on governed agents.</p>
+    <div class="med rv">
+      <a class="vid" href="https://www.youtube.com/watch?v=7HvOlSnfubQ" target="_blank" rel="noopener"
+         aria-label="Watch the CEO Keynote and AI Demo with William West on YouTube">
+        <picture>
+          <source type="image/avif" srcset="../assets/keynote-640.73d6f6ba.avif 640w, ../assets/keynote-1000.22261efb.avif 1000w" sizes="(max-width:900px) 100vw, 610px">
+          <img class="shot" src="../assets/keynote-1000.349839ca.jpg" alt="" width="2000" height="1124" loading="lazy" decoding="async">
+        </picture>
+        <span class="yt"><b></b> Watch on YouTube</span>
+        <span class="mid">
+          <i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></i>
+          <span>CEO Keynote and AI Demo<br>with William West</span>
+        </span>
+        <span class="foot">Domo · Domopalooza 2026 · 31 Mar</span>
+      </a>
+      <div class="medtxt">
+        <h3>Building five agents live, on the mainstage</h3>
+        <p><b>Domo put a live, unrehearsed build inside its CEO keynote</b>. I wired five agents to governed
+        enterprise data with Claude Code, on stage with Josh James, fixing and extending a running
+        Domo instance in front of the company's largest audience of the year.</p>
+        <div class="more">
+          <a class="btn ghost" href="https://github.com/Willwwest/domopalooza2026" target="_blank" rel="noopener">Source on GitHub</a>
+        </div>
+      </div>
+    </div>
+    <div class="cs rv" id="case">
+      <div class="side">
+        <span class="tag">Setting<b>Domopalooza mainstage, unrehearsed</b></span>
+        <span class="tag">Data<b>Mortgage regulatory ETLs (HMDA LAR)</b></span>
+        <span class="tag">Tooling<b>Claude Code against the Domo API</b></span>
+        <span class="tag">Result<b>25 fixes, 5 ETLs, zero errors</b></span>
+      </div>
+      <div>
+        <div class="step">
+          <em>The setup</em>
+          <p>A pipeline that fails is easy to notice. One that keeps running while <b>producing
+          wrong numbers can go unnoticed for months</b>, which makes it the more expensive problem to
+          have.</p>
+          <p>The ask on stage went to the harder version: "look through every
+          single ETL, find the ones that have issues, not just the ones that are broken."
+          Misspellings in filters, empty columns, bad CASE statements, joins that look suspicious.</p>
+        </div>
+        <div class="step">
+          <em>What it found</em>
+          <p>In a 2018–2020 HMDA mortgage dataflow, a <code>purchaser_type</code> CASE had <b>eleven
+          WHEN clauses that all tested the same value</b>. Only the first branch could fire.
+          Fannie Mae, Ginnie Mae, Freddie Mac: dead code, every row labelled "Not applicable."</p>
+          <p>The more interesting one was <b>a single typo</b>: <code>Prinicial residence</code> where the data said
+          <code>Principal residence</code>. Every downstream filter looking for "Principal"
+          returned zero rows, and <b>nothing anywhere threw an error</b>. Plus eight CASE statements
+          with no ELSE,
+          turning unmatched values into NULL.</p>
+        </div>
+        <div class="step">
+          <em>The fix</em>
+          <p>Then the follow-up prompt, typed live: "how many of these can you fix for me right
+          now, my job depends on it." Five dataflows repaired and saved in front of the room:
+          purchaser codes corrected, the typo fixed, ELSE clauses added, join keys aligned, NULLIF
+          guards put around three divisions. <b>25 fixes across 5 ETLs, zero errors.</b></p>
+        </div>
+        <div class="step">
+          <em>Why it matters</em>
+          <p><b>None of that came down to model capability.</b> It came down to governance, API access, and
+          knowing which kinds of failure stay hidden.</p>
+        </div>
+        <figure class="ev">
+          <a class="pic" href="../assets/evidence-532.225fce4e.jpg" target="_blank" rel="noopener"
+             data-cap="The fix log, as it appeared to the room"
+             aria-label="Enlarge: the on-screen fix log">
+          <picture>
+          <source type="image/avif" srcset="../assets/evidence-532.d9ecc35e.avif 532w" sizes="(max-width:900px) 100vw, 566px">
+          <img src="../assets/evidence-532.225fce4e.jpg" alt="On-screen output: 25 fixes applied across all 5 ETLs, zero errors" width="532" height="492" loading="lazy" decoding="async">
+        </picture>
+          </a>
+          <figcaption>The fix log, as it appeared to the room</figcaption>
+        </figure>
+      </div>
+    </div>
+    <a class="pod rv" href="https://open.spotify.com/episode/3UsIQgwNsOesVHUtFTl23L" target="_blank" rel="noopener"
+       aria-label="Listen: From Dashboards to Digital Operators, on Spotify">
+      <span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+      <span>
+        <span class="show">Governed Data for Agentic AI · Podcast</span>
+        <h3>From Dashboards to Digital Operators: Building Agentic AI Apps on the Domo Platform</h3>
+        <span class="with">Building a human-resources agentic application live with Domo CMO Mark Boothe:
+        human-in-the-loop workflows, role-level security, and pro-code App Studio builds.</span>
+      </span>
+      <span class="rt">28 Jul 2026<br>39 min<br><i>Listen on Spotify</i></span>
+    </a>
+    <div class="midcta rv">
+      <p>If this is the shape of the problem you have, I'd like to hear about it.</p>
+      <a class="btn solid" href="mailto:quotes@willwest.dev">Start a conversation</a>
+    </div>
+  </div>
+</section>
+
+<section id="method" class="lift">
+  <div class="col">
+    <div class="op"><h2>How I work</h2></div>
+    <p class="stmt">How engagements start, and why the second one costs less.</p>
+
+    <div class="cap rv">
+      <h3>Discovery first, then building inside their environment</h3>
+      <div>
+        <p><b>Most of the useful work happens before anyone writes code.</b> I spend the first sessions
+        on the environment with their data and security people: the permissions model,
+        where the data sits, and what stalled any previous attempt.</p>
+        <p>Teams in regulated industries have been burned by something that demoed well and then
+        could not be deployed. That history tells me what they will agree to next.
+        When a deployment has to clear a bank's security review, <b>the work is everything around
+        the model</b>.</p>
+        <p>From there <b>the build happens in their systems rather than a sandbox</b>. I hit the connectors, authentication, pipelines and RBAC
+        constraints early instead of at the end. I can connect an agent to a customer's live data in five
+        minutes, sometimes ten; a usable prototype takes an afternoon, and production runs <b>one
+        to four weeks</b>.</p>
+        <p><b>At that pace people react to working software.</b> They get specific about what they want
+        once they can see their own data moving, and the questions after that first session are
+        the ones worth building around.</p>
+      </div>
+    </div>
+
+    <div class="cap rv">
+      <h3>Each engagement makes the next one cheaper</h3>
+      <div>
+        <p>Every engagement produces <b>pattern libraries, implementation playbooks and readiness
+        checklists</b>. The next deployment inside that organization starts from those, and moves faster than the first one did.</p>
+        <p><b>The running cost compounds the same way</b>: as the reusable components get
+        tighter, token consumption falls and the model tier each task requires comes down with it.</p>
+        <p>Classification, extraction, routing and retrieval make up most of the volume. They run below frontier capability, which is why local models keep taking more of them. That makes
+        <b>engineering quality and inference spend the same lever</b>, and most companies still budget them
+        separately.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="col rv">
+    <div class="op"><h2>Enablement</h2></div>
+    <p class="stmt">The job is finished when the team doesn't need you.</p>
+    <p class="lede">Build the capability <b>with the people closest to the problem.</b> If a deployment only
+    works while its builder is in the room, the team still depends on one person.</p>
+    <p class="lede">At Domo that meant <b>building the practice, not only the deployments</b>. Inside a
+    year: a repeatable five-phase delivery model, an engineering team of twenty, a
+    forty-seven-person Center of Excellence, and the build standards and hiring bar underneath
+    them.</p>
+    <p class="lede"><b>Those sixty-seven people now run the work</b>; several hundred more have come through the
+    training beneath them, across every department and inside customer organizations.</p>
+    <p class="lede">For the customer <b>the deliverable is a team that can extend it</b>: patterns they
+    can copy, standards they hold each other to, and enough hands-on time that the next workload
+    doesn't need a phone call.</p>
+    <p class="lede"><b>Hackathons work better than documentation.</b> Sitting with a
+    customer's team in Japan beats shipping them a runbook. Capability spread that far outlasts the engagement; a single expert becomes the constraint.</p>
+    <div class="fstrip rv" role="group" aria-label="Field photographs">
+      <figure>
+        <a class="pic" href="../assets/field-training-880.0bf0248f.jpg" target="_blank" rel="noopener" data-cap="Claude Code, taught live" aria-label="Enlarge: Leading a hands-on Claude Code session, splash screen projected behind"><picture>
+          <source type="image/avif" srcset="../assets/field-training-440.42abbad5.avif 440w, ../assets/field-training-880.98accaac.avif 880w" sizes="(max-width:900px) 46vw, 205px">
+          <img src="../assets/field-training-880.0bf0248f.jpg" alt="Leading a hands-on Claude Code session, splash screen projected behind" width="1280" height="1600" loading="lazy" decoding="async">
+        </picture></a>
+        <figcaption>Claude Code, taught live</figcaption>
+      </figure>
+      <figure>
+        <a class="pic" href="../assets/field-workshop-880.e5b4842b.jpg" target="_blank" rel="noopener" data-cap="Customer session · Tokyo" aria-label="Enlarge: Working session with a customer team around a conference table in Tokyo"><picture>
+          <source type="image/avif" srcset="../assets/field-workshop-440.a91d81e2.avif 440w, ../assets/field-workshop-880.476b8263.avif 880w" sizes="(max-width:900px) 46vw, 205px">
+          <img src="../assets/field-workshop-880.e5b4842b.jpg" alt="Working session with a customer team around a conference table in Tokyo" width="1280" height="1707" loading="lazy" decoding="async">
+        </picture></a>
+        <figcaption>Customer session · Tokyo</figcaption>
+      </figure>
+      <figure>
+        <a class="pic" href="../assets/field-logisteed-880.41a44c78.jpg" target="_blank" rel="noopener" data-cap="Logisteed · Tokyo" aria-label="Enlarge: With the LOGISTEED team, Tokyo"><picture>
+          <source type="image/avif" srcset="../assets/field-logisteed-440.767e0145.avif 440w, ../assets/field-logisteed-880.34a741be.avif 880w" sizes="(max-width:900px) 46vw, 205px">
+          <img src="../assets/field-logisteed-880.41a44c78.jpg" alt="With the LOGISTEED team, Tokyo" width="1229" height="1536" loading="lazy" decoding="async">
+        </picture></a>
+        <figcaption>Logisteed · Tokyo</figcaption>
+      </figure>
+      <figure>
+        <a class="pic" href="../assets/field-transit-880.b7cd0710.jpg" target="_blank" rel="noopener" data-cap="Between meetings · Tokyo" aria-label="Enlarge: Building from the back seat between customer meetings in Tokyo"><picture>
+          <source type="image/avif" srcset="../assets/field-transit-440.9e496b21.avif 440w, ../assets/field-transit-880.6b1cc96d.avif 880w" sizes="(max-width:900px) 46vw, 205px">
+          <img src="../assets/field-transit-880.b7cd0710.jpg" alt="Building from the back seat between customer meetings in Tokyo" width="1280" height="1600" loading="lazy" decoding="async">
+        </picture></a>
+        <figcaption>Between meetings · Tokyo</figcaption>
+      </figure>
+      <figure>
+        <a class="pic" href="../assets/field-mainstage-1000.e4fb5184.jpg" target="_blank" rel="noopener" data-cap="Domopalooza mainstage" aria-label="Enlarge: A Domopalooza mainstage hall filling before a session"><picture>
+          <source type="image/avif" srcset="../assets/field-mainstage-440.ace3333a.avif 440w, ../assets/field-mainstage-1000.8009124a.avif 1000w" sizes="(max-width:900px) 92vw, 205px">
+          <img src="../assets/field-mainstage-1000.e4fb5184.jpg" alt="A Domopalooza mainstage hall filling before a session" width="2048" height="1536" loading="lazy" decoding="async">
+        </picture></a>
+        <figcaption>Domopalooza mainstage</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="built" class="lift">
+  <div class="col">
+    <div class="op"><h2>Who I've built for</h2></div>
+    <p class="stmt">Named accounts, grouped by industry.</p>
+    <dl>
+      <div class="sect rv">
+        <dt><span>Financial services</span><em>Agent deployments inside RBAC-governed environments, through security review.</em></dt>
+        <dd>
+          <img class="lg" data-b="regions" alt="Regions Bank" src="../assets/logoc-regions.51b1004c.png" loading="lazy" decoding="async">
+          <img class="lg" data-b="usbank" alt="U.S. Bank" src="../assets/logoc-usbank.8658b7de.png" loading="lazy" decoding="async">
+          <img class="lg" data-b="fidelity" alt="Fidelity" src="../assets/logoc-fidelity.ca207bc9.png" loading="lazy" decoding="async">
+          <img class="lg" data-b="manulife" alt="Manulife" src="../assets/logoc-manulife.d47fb3d9.png" loading="lazy" decoding="async">
+        </dd></div>
+      <div class="sect rv">
+        <dt><span>Global enterprise</span><em>Custom applications and API connectors wiring source systems into analytics.</em></dt>
+        <dd>
+          <img class="lg" data-b="cisco" alt="Cisco" src="../assets/logoc-cisco.2be52e64.png" loading="lazy" decoding="async">
+          <img class="lg" data-b="ups" alt="UPS" src="../assets/logoc-ups.fdbeb43e.png" loading="lazy" decoding="async">
+          <img class="lg" data-b="omnicom" alt="Omnicom" src="../assets/logoc-omnicom.91aba5e6.png" loading="lazy" decoding="async">
+          <img class="lg" data-b="concentrix" alt="Concentrix" src="../assets/logoc-concentrix.91c2a730.png" loading="lazy" decoding="async">
+          <img class="lg" data-b="roberthalf" alt="Robert Half" src="../assets/logoc-roberthalf.e3eb251c.png" loading="lazy" decoding="async">
+        </dd></div>
+      <div class="sect rv">
+        <dt><span>Consumer &amp; hospitality</span><em>Operational dashboards and agent workflows across distributed sites.</em></dt>
+        <dd>
+          <img class="lg" data-b="yum" alt="Yum! Brands" src="../assets/logoc-yum.19d61ec0.png" loading="lazy" decoding="async">
+          <img class="lg" data-b="sixflags" alt="Six Flags" src="../assets/logoc-sixflags.9b398d22.png" loading="lazy" decoding="async">
+          <img class="lg" data-b="fogo" alt="Fogo de Chão" src="../assets/logoc-fogo.2238f260.png" loading="lazy" decoding="async">
+        </dd></div>
+      <div class="sect rv">
+        <dt><span>Healthcare &amp; industrial</span><em>Pipelines and reporting under regulated data handling.</em></dt>
+        <dd>
+          <img class="lg" data-b="capsa" alt="Capsa Healthcare" src="../assets/logoc-capsa.9a4b92aa.png" loading="lazy" decoding="async">
+          <img class="lg" data-b="cti" alt="CTI Foods" src="../assets/logoc-cti.614f6086.png" loading="lazy" decoding="async">
+          <img class="lg" data-b="fwm" alt="Fort Wayne Metals" src="../assets/logoc-fwm.685d3868.png" loading="lazy" decoding="async">
+        </dd></div>
+      <div class="sect rv">
+        <dt><span>Media &amp; education</span><em>Data products and enablement for non-technical teams.</em></dt>
+        <dd>
+          <img class="lg" data-b="seattletimes" alt="The Seattle Times" src="../assets/logoc-seattletimes.4f52fcb6.png" loading="lazy" decoding="async">
+          <img class="lg" data-b="tamu" alt="Texas A&amp;M AgriLife" src="../assets/logoc-tamu.03e11cba.png" loading="lazy" decoding="async">
+          <img class="lg" data-b="alchemer" alt="Alchemer" src="../assets/logoc-alchemer.932acddc.png" loading="lazy" decoding="async">
+        </dd></div>
+    </dl>
+    <p class="bfnote rv">Built at Domo and through independent consulting.</p>
+  </div>
+</section>
+
+<section>
+  <div class="col rv">
+    <div class="op"><h2>Background</h2></div>
+    <p class="stmt">I came to engineering through sales.</p>
+    <div class="bg2">
+      <p class="lede">Discovery, executive rooms and carrying a number are where I started, and <b>why I'm useful
+      in the room</b> before anyone opens an editor.</p>
+      <div class="side kit">
+        <span class="tag">Languages and data<b>JavaScript · React · SQL · REST&nbsp;APIs · Amazon&nbsp;Redshift</b></span>
+        <span class="tag">AI tooling<b>MCP · Multi-agent&nbsp;orchestration · RAG · Claude&nbsp;Code</b></span>
+      </div>
+    </div>
+    <div class="tl" role="region" aria-label="Career timeline, scrolls horizontally" tabindex="0">
+      <ol>
+        <li>
+          <span class="era">2015 – 2017 · Milwaukee Tool</span>
+          <strong>#1 U.S. Sales Representative</strong>
+          <p>Grew a 250-account distributor territory 130%, past $1M a year. Learned to read what a buyer needs, and what
+          their team will adopt.</p>
+          <a class="pic" href="../assets/milwaukee-1400.4c98975e.jpg" target="_blank" rel="noopener"
+             data-cap="Milwaukee Tool · demo day" aria-label="Enlarge: Will West with a customer at a Milwaukee Tool demo day">
+            <picture>
+              <source type="image/avif" srcset="../assets/milwaukee-360.2af1d7c8.avif 360w, ../assets/milwaukee-720.dae48c8a.avif 720w" sizes="(max-width:900px) 74vw, 280px">
+              <img src="../assets/milwaukee-720.e54f7be0.jpg" alt="Will West with a customer and a cart stacked with Milwaukee tools at a demo day" width="2048" height="1365" loading="lazy" decoding="async">
+            </picture>
+          </a>
+        </li>
+        <li>
+          <span class="era">2020 – 2022 · Turo</span>
+          <strong>Senior Account Executive</strong>
+          <p>Scaled top accounts past $100K a month; won Account Manager MVP and a SOAR award.</p>
+          <a class="pic" href="../assets/turo-ae-1280.029d3837.jpg" target="_blank" rel="noopener"
+             data-cap="Turo · Top Sales Performer · 2022 H1" aria-label="Enlarge: Turo Top Sales Performer trophy engraved Will West, 2022 H1">
+            <picture>
+              <source type="image/avif" srcset="../assets/turo-ae-360.58275b76.avif 360w, ../assets/turo-ae-720.d73ff4ed.avif 720w" sizes="(max-width:900px) 74vw, 280px">
+              <img src="../assets/turo-ae-720.1d1339cd.jpg" alt="Turo Top Sales Performer trophy engraved Will West, 2022 H1" width="1280" height="853" loading="lazy" decoding="async">
+            </picture>
+          </a>
+        </li>
+        <li>
+          <span class="era">2022 – 2024 · Turo</span>
+          <strong>Host Success Team Lead</strong>
+          <p>Led nine to thirteen Host Success Managers on the largest account book in the
+          company, coaching the team to run on data.</p>
+          <a class="pic" href="../assets/turo-880.83b915b0.jpg" target="_blank" rel="noopener"
+             data-cap="Turo · an award on my team" aria-label="Enlarge: a Host Success team member holding a Turo award">
+            <picture>
+          <source type="image/avif" srcset="../assets/turo-540.6be5f6ac.avif 540w, ../assets/turo-880.80ca4cdd.avif 880w" sizes="(max-width:900px) 74vw, 280px">
+          <img src="../assets/turo-880.83b915b0.jpg" alt="A member of Will's Host Success team holding a Turo award" width="880" height="540" loading="lazy" decoding="async">
+        </picture>
+          </a>
+        </li>
+        <li>
+          <span class="era">2024 – 2025 · Turo</span>
+          <strong>Data Analyst</strong>
+          <p>Led the company-wide migration from Salesforce and Tableau to Domo and built the
+          Redshift business logic underneath it: the seat where selling turned into engineering.</p>
+          <a class="pic" href="../assets/turo-analyst-1200.9a96c472.jpg" target="_blank" rel="noopener"
+             data-cap="Turo · CEO recognition · Dec 2024" aria-label="Enlarge: recognition slide naming Will West, Data Analyst">
+            <picture>
+              <source type="image/avif" srcset="../assets/turo-analyst-360.21094e49.avif 360w, ../assets/turo-analyst-720.824a07d1.avif 720w" sizes="(max-width:900px) 74vw, 280px">
+              <img src="../assets/turo-analyst-720.951ca4a0.jpg" alt="Recognition slide on the Turo CEO's shared screen: Will West, Data Analyst, Phoenix" width="1280" height="854" loading="lazy" decoding="async">
+            </picture>
+          </a>
+        </li>
+        <li>
+          <span class="era">2025 – 2026 · Domo</span>
+          <strong>Senior Technical Consultant</strong>
+          <p>Hired to build: full-stack custom application work and API connectors for enterprise
+          accounts, delivered to spec on fixed-timeline contracts.</p>
+          <a class="pic" href="../assets/domo-stc-1200.7bad58ff.jpg" target="_blank" rel="noopener"
+             data-cap="Domo · Claude Code enablement session" aria-label="Enlarge: presenting a Claude Code session at Domo">
+            <picture>
+              <source type="image/avif" srcset="../assets/domo-stc-360.ccf3fc21.avif 360w, ../assets/domo-stc-720.10b36fa5.avif 720w" sizes="(max-width:900px) 74vw, 280px">
+              <img src="../assets/domo-stc-720.a6fc8e7c.jpg" alt="Presenting a Claude Code session at Domo, the welcome screen projected behind" width="1200" height="800" loading="lazy" decoding="async">
+            </picture>
+          </a>
+        </li>
+        <li>
+          <span class="era">2026 – Present · Domo</span>
+          <strong>Director of AI Ecosystems</strong>
+          <p>Production AI built inside enterprise customer environments, and the forward-deployed
+          practice that delivers it.</p>
+          <a class="pic" href="../assets/podium-1400.a12b4004.jpg" target="_blank" rel="noopener"
+             data-cap="Domopalooza 2026 · the keynote" aria-label="Enlarge: Will West presenting at the Domopalooza 2026 keynote">
+            <picture>
+              <source type="image/avif" srcset="../assets/podium-360.92b1ccea.avif 360w, ../assets/podium-720.470be0d4.avif 720w" sizes="(max-width:900px) 74vw, 280px">
+              <img src="../assets/podium-720.6d79bd0f.jpg" alt="Will West presenting at the Domopalooza 2026 keynote, Josh James watching" width="1800" height="1200" loading="lazy" decoding="async">
+            </picture>
+          </a>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="th lift">
+  <div class="col rv">
+    <div class="op"><h2>Point of view</h2></div>
+    <p class="stmt">Two places the economics have already changed.</p>
+    <p class="lede">AI can do the task. The open question is how much of the operating model you
+    rebuild once it can.</p>
+    <div class="thlist">
+      <div><strong>Full SaaS replacement</strong><p>Most core SaaS functions a company pays for
+      every month <b>can now be rebuilt in-house</b>, fitted to how that team works,
+      and owned outright. <b>The build-versus-buy line moved</b>, and most companies have not caught up.</p></div>
+      <div><strong>Agentic workflow optimization</strong><p><b>The wins are in the workflows nobody
+      documented</b>: the handoffs, the approvals, the copy-paste between systems. Agents with
+      human-in-the-loop checkpoints take the mechanical parts and give people back the judgement
+      calls.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="ct" id="contact">
+  <div class="col rv">
+    <div class="op"><h2>Working together</h2></div>
+    <p class="stmt">Fixed scope and a fixed timeline, agreed before the work starts.</p>
+    <div class="want">
+      <div><strong>What I take on</strong><p>I get AI systems from an idea into production
+      inside your environment: agents wired to governed data, custom applications, and the
+      pipelines and permissions underneath them.</p></div>
+      <div><strong>How engagements run</strong><p>Discovery with your data and security people
+      first, something running against real data inside the first week, and production in one to
+      four weeks for most scopes. Remote from Phoenix, on site when the work earns the trip.</p></div>
+      <div><strong>How to start</strong><p>A short call about what you are trying to build and
+      what has blocked it so far. If it fits, I scope it in writing before either of us
+      commits.</p></div>
+    </div>
+    <a class="big" href="mailto:quotes@willwest.dev">quotes@willwest.dev</a>
+    <div class="sub">
+      <a class="lnk" href="https://www.linkedin.com/in/westwill">linkedin.com/in/westwill</a>
+      
+      <a class="lnk" href="https://github.com/Willwwest">github.com/Willwwest</a>
+    </div>
+    <div class="loc">Usually replies same day</div>
+  </div>
+</section>
+
+<footer>
+  <div class="col">
+    <span>© 2026 Will West</span>
+    <span>Phoenix, Arizona</span>
+  </div>
+</footer>
+
+<dialog class="lb" id="lb" aria-label="Enlarged photograph">
+  <figure>
+    <img id="lbimg" alt="">
+    <figcaption><span id="lbcap"></span>
+      <button class="lbx" id="lbx" aria-label="Close">
+        <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 1l10 10M11 1L1 11"/></svg>
+      </button>
+    </figcaption>
+  </figure>
+</dialog>
+
+<script>
+(function(){
+  document.documentElement.classList.add('js');
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var hdr = document.getElementById('hdr'), ticking = false;
+  function onScroll(){
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function(){ hdr.classList.toggle('stuck', scrollY > 24); ticking = false; });
+  }
+  addEventListener('scroll', onScroll, { passive:true }); onScroll();
+
+  // Timeline lightbox. Thumbs are plain links to the full image; script upgrades them to
+  // the dialog. Without script, or without <dialog> support, the link behavior stands.
+  var lb = document.getElementById('lb');
+  if (lb && typeof lb.showModal === 'function'){
+    var lbimg = document.getElementById('lbimg'), lbcap = document.getElementById('lbcap');
+    document.querySelectorAll('.tl a.pic, .fstrip a.pic, figure.ev a.pic').forEach(function(a){
+      a.addEventListener('click', function(ev){
+        ev.preventDefault();
+        var t = a.querySelector('img');
+        // seed the thumb's width/height attrs so the dialog opens at final size
+        // instead of collapsing until the large file arrives
+        if (t){ lbimg.width = t.getAttribute('width'); lbimg.height = t.getAttribute('height'); }
+        lbimg.src = a.getAttribute('href');
+        lbimg.alt = t ? t.alt : '';
+        lbcap.textContent = a.getAttribute('data-cap') || '';
+        lb.showModal();
+      });
+    });
+    lb.addEventListener('click', function(ev){ if (ev.target === lb) lb.close(); });
+    document.getElementById('lbx').addEventListener('click', function(){ lb.close(); });
+    lb.addEventListener('close', function(){
+      lbimg.removeAttribute('src'); lbimg.removeAttribute('width'); lbimg.removeAttribute('height');
+    });
+  }
+
+  // The rail anchors to its right edge — the story ends at the current seat, so that is
+  // what a visitor sees first. On fine pointers with motion allowed, hovering toward
+  // either edge rolls the rail that way, harder the closer to the edge; the middle is a
+  // dead zone. Touch, keyboard, scrollbar and no-JS all keep native scrolling untouched
+  // (no-JS simply starts at the oldest seat). The late re-anchor covers lazy thumbs
+  // changing scrollWidth, and stands down as soon as the visitor scrolls on their own.
+  var tl = document.querySelector('.tl');
+  if (tl){
+    var tlTouched = false;
+
+    // Edge fades track the scroll position: a side only fades while there is something hidden
+    // that way. Fixed masks were the bug — scrolled fully left, the left fade ate the first
+    // card's own text. Width scales off the container so phones get a proportionate fade
+    // instead of a hardcoded one, and both sides sit at 0 until this runs.
+    var tlRaf = null;
+    var tlEdges = function(){
+      tlRaf = null;
+      var max = tl.scrollWidth - tl.clientWidth;
+      var w = Math.round(Math.min(104, Math.max(28, tl.clientWidth * 0.16))) + 'px';
+      tl.style.setProperty('--mL', tl.scrollLeft > 6 ? w : '0px');
+      tl.style.setProperty('--mR', tl.scrollLeft < max - 6 ? w : '0px');
+    };
+    var tlEdgesQueued = function(){ if (!tlRaf) tlRaf = requestAnimationFrame(tlEdges); };
+    tl.addEventListener('scroll', tlEdgesQueued, { passive:true });
+    addEventListener('resize', tlEdgesQueued, { passive:true });
+
+    var tlAnchor = function(){ if (!tlTouched) tl.scrollLeft = tl.scrollWidth; tlEdges(); };
+    tlAnchor(); addEventListener('load', tlAnchor, { once:true });
+    ['pointerdown','wheel','touchstart','keydown'].forEach(function(t){
+      tl.addEventListener(t, function(){ tlTouched = true; }, { passive:true, once:true });
+    });
+    if (!reduce && matchMedia('(hover:hover) and (pointer:fine)').matches){
+      var tlv = 0, tlraf = null, tlPrev = 0;
+      // scroll-snap re-snaps every programmatic scrollLeft assignment straight back to the
+      // nearest card — the loop writes, snap reverts, net motion zero. Snap is suspended
+      // while the roll runs and restored when it stops, which also settles the rail onto
+      // the nearest card as the pointer pulls away. Velocity is px/second against the rAF
+      // timestamp (capped delta), so 60Hz and 144Hz displays roll at the same speed.
+      var tlStep = function(ts){
+        if (tlv && tl.scrollWidth > tl.clientWidth + 1){
+          if (tlPrev) tl.scrollLeft += tlv * Math.min(ts - tlPrev, 50) / 1000;
+          tlPrev = ts; tlTouched = true; tlraf = requestAnimationFrame(tlStep);
+        } else { tlraf = null; tlPrev = 0; tl.style.scrollSnapType = ''; }
+      };
+      tl.addEventListener('pointermove', function(e){
+        var r = tl.getBoundingClientRect();
+        var x = (e.clientX - r.left) / r.width * 2 - 1;   // -1 at the left edge, 1 at the right
+        var mag = Math.max(0, Math.abs(x) - .38) / .62;   // inner 38% is still
+        tlv = (x < 0 ? -1 : 1) * mag * mag * 840;         // ease-in, ~840px/s at the edge
+        if (tlv && !tlraf){ tl.style.scrollSnapType = 'none'; tlraf = requestAnimationFrame(tlStep); }
+      });
+      tl.addEventListener('pointerleave', function(){ tlv = 0; tl.style.scrollSnapType = ''; });
+    }
+  }
+
+  // If observers are unavailable or motion is reduced, nothing may stay hidden: reveal
+  // everything up front. Only then is it safe to construct any IntersectionObserver.
+  var hasIO = 'IntersectionObserver' in window;
+  if (reduce || !hasIO){ document.querySelectorAll('.rv').forEach(function(el){ el.classList.add('in'); }); }
+  if (!hasIO) return;
+
+  var links = document.querySelectorAll('.hdr nav a');
+  var spy = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if (!e.isIntersecting) return;
+      links.forEach(function(a){
+        if (a.getAttribute('href') === '#' + e.target.id) a.setAttribute('aria-current', 'true');
+        else a.removeAttribute('aria-current');
+      });
+    });
+  }, { rootMargin:'-35% 0px -55% 0px' });
+  ['proof','method','built','contact'].forEach(function(id){
+    var el = document.getElementById(id); if (el) spy.observe(el);
+  });
+
+  if (reduce) return;
+
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold:.12, rootMargin:'0px 0px -8% 0px' });
+  document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+
+  // The stat bar counts itself in once, after the cells' entrance settles. Numbers are
+  // server-rendered, so no-JS and reduced-motion visitors always see the real values.
+  var cio = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if (!e.isIntersecting) return;
+      cio.unobserve(e.target);
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      e.target.querySelectorAll('b > span').forEach(function(el, i){
+        // Only animate a cell whose value is a bare integer. parseInt("100s") returns 100
+        // rather than NaN, so the old isNaN guard let the counter finish by writing "100"
+        // back and silently dropping the "s".
+        if (!/^\d+$/.test(el.textContent.trim())) return;
+        var t = parseInt(el.textContent, 10);
+        el.textContent = '0';
+        setTimeout(function(){
+          var t0 = performance.now(), dur = 1300;
+          (function step(now){
+            var p = Math.min((now - t0) / dur, 1);
+            el.textContent = String(Math.round(t * (1 - Math.pow(2, -10 * p))));
+            if (p < 1) requestAnimationFrame(step); else el.textContent = String(t);
+          })(t0);
+        }, 620 + i * 90);
+      });
+    });
+  }, { threshold:.4 });
+  var bar = document.querySelector('.bar .col');
+  if (bar) cio.observe(bar);
+
+})();
+</script>
+</body>
+</html>
