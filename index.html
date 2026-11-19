@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-TQo7qow0CaPPW7WO1Er+OSOZFKJWATj+pbRq7H9+/RA='; style-src 'self' 'sha256-sq3lkP5VowwR6TIA0JuxXM23B9wkRV+0/ezKO4GYW2E='; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-TQo7qow0CaPPW7WO1Er+OSOZFKJWATj+pbRq7H9+/RA='; style-src 'self' 'sha256-DK+snPCyejQQNjTaK/9kVB/iTZ4nd91WpnBTcwpvN7c='; img-src 'self' data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Will West — Applied AI &amp; Forward Deployed Engineering</title>
@@ -99,6 +99,16 @@
   .htxt{align-self:center;max-width:660px;
         padding:calc(var(--hdr) + clamp(28px,6vh,60px)) clamp(30px,4.5vw,72px) clamp(34px,6vh,60px) 0}
   .hphoto{position:relative;margin:0;border-left:1px solid var(--hair)}
+  /* three.js constellation (assets/fx, source in tools/fx): one point per production app, one
+     cluster per enterprise. Sits above the glow and grain, under the copy and the photograph;
+     the scene itself dims whatever falls under the text block, so the t2/t3 contrast measured
+     above holds. Absent without WebGL2, script or Save-Data, and a still frame under reduced
+     motion. Fades in once its first frame is drawn. */
+  .hwrap{position:relative}
+  .hfx{position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;
+        transition:opacity 1.8s cubic-bezier(.22,.61,.36,1)}
+  .hfx.on,.capfx.on{opacity:1}
+  .hfx canvas,.capfx canvas{display:block;width:100%;height:100%}
   /* grade (black point at the page ground, capped highlights) is baked into the asset —
      no CSS filter, no mask. object-position keeps the subject and his headroom. */
   .hphoto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:45% 20%}
@@ -280,7 +290,14 @@
   .cap{display:grid;grid-template-columns:var(--split-a);gap:var(--split-gap);
        padding-block:clamp(28px,3.6vw,42px);border-top:1px solid var(--hair2);align-items:start}
   .cap:first-of-type{border-top:1px solid var(--hair)}
-  .cap h3{position:sticky;top:calc(var(--hdr) + 26px);color:var(--w);font-size:clamp(19px,2vw,26px);font-weight:650;letter-spacing:-.021em;line-height:1.2;text-wrap:balance}
+  /* The heading and its figure travel together. The figure exists only on wide screens with
+     motion allowed and WebGL available (html.fx); everywhere else the column is the heading
+     alone, exactly as before. */
+  .capl{position:sticky;top:calc(var(--hdr) + 26px)}
+  .capfx{display:none;margin-top:clamp(22px,2.6vw,34px);width:100%;max-width:380px;aspect-ratio:16/10;
+        pointer-events:none;opacity:0;transition:opacity 1.2s cubic-bezier(.22,.61,.36,1)}
+  .fx .capfx{display:block}
+  .cap h3{color:var(--w);font-size:clamp(19px,2vw,26px);font-weight:650;letter-spacing:-.021em;line-height:1.2;text-wrap:balance}
   .cap p{font-size:16.5px;line-height:1.66;color:var(--t2);max-width:var(--m-body)}
   .cap p + p{margin-top:11px}
 
@@ -517,7 +534,8 @@
     .side.kit .tag:first-child{border-top:1px solid var(--hair2);padding-top:9px}
     /* single column here, so the label has nothing to travel alongside - pinned, it would
        just sit on top of the prose it belongs to */
-    .cs .side,.cap h3{position:static}
+    .cs .side,.capl{position:static}
+    .fx .capfx{display:none}
     .thlist,.ct .want{grid-template-columns:1fr;gap:20px}
     .fstrip{grid-template-columns:repeat(2,1fr)}
     /* the hall shot closes the strip full-width; wide it needs a wide frame */
@@ -534,6 +552,7 @@
   @media(max-width:420px){ .lg{height:calc(var(--h,24px) * .86)} }
   @media (prefers-reduced-motion:reduce){
     html{scroll-behavior:auto}
+    .fx .capfx{display:none}
     .js .rv{opacity:1;transform:none;transition:none}
     /* Pseudo-elements animate too (the hero glow lives on ::before), and delays hide content
        just as well as durations do — zero all of it, everywhere, and clamp loops to one run. */
@@ -583,6 +602,7 @@
 <div class="hero" id="top">
   <div class="gr" aria-hidden="true"></div>
   <div class="hwrap">
+    <div class="hfx" data-fx="hero" aria-hidden="true"></div>
     <div class="htxt">
       <h1>200+ AI applications<br class="hbr"> in production, across<br class="hbr"> 100+ enterprises.</h1>
       <p class="hsub">Inside banks, insurers and universities, most of them within the last year.
@@ -696,7 +716,10 @@
     <p class="stmt">How engagements start, and why the second one costs less.</p>
 
     <div class="cap rv">
-      <h3>Discovery first, then building inside their environment</h3>
+      <div class="capl">
+        <h3>Discovery first, then building inside their environment</h3>
+        <div class="capfx" data-fx="untangle" aria-hidden="true"></div>
+      </div>
       <div>
         <p><b>Most of the useful work happens before anyone writes code.</b> I spend the first sessions
         on the environment with their data and security people: the permissions model,
@@ -716,7 +739,10 @@
     </div>
 
     <div class="cap rv">
-      <h3>Each engagement makes the next one cheaper</h3>
+      <div class="capl">
+        <h3>Each engagement makes the next one cheaper</h3>
+        <div class="capfx" data-fx="branch" aria-hidden="true"></div>
+      </div>
       <div>
         <p>Every engagement produces <b>pattern libraries, implementation playbooks and readiness
         checklists</b>. The next deployment inside that organization starts from those, and moves faster than the first one did.</p>
@@ -1142,5 +1168,6 @@
 
 })();
 </script>
+<script type="module" src="/assets/fx/boot.NQXLFEM6.js"></script>
 </body>
 </html>
