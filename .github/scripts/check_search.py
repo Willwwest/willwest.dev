@@ -15,6 +15,9 @@ from page_policy import policy_tags
 
 ROOT = Path(__file__).resolve().parents[2]
 ORIGIN = 'https://willwest.dev'
+# relative module specifiers in a built script: static imports and dynamic import() chunks
+IMPORTS = re.compile(r'(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s*)["\'](\.{1,2}/[^"\']+\.js)["\']')
+SCRIPT_TYPES = ('text/javascript', 'application/javascript')
 
 
 def srcset_urls(value):
@@ -62,6 +65,8 @@ class Page(HTMLParser):
             self.assets.append((attrs['src'], 'image'))
         if tag in ('img', 'source') and attrs.get('srcset'):
             self.assets.extend((src, 'image') for src in srcset_urls(attrs['srcset']))
+        if tag == 'script' and attrs.get('src'):
+            self.assets.append((attrs['src'], 'script'))
         if tag == 'link' and 'stylesheet' in attrs.get('rel', '').lower().split() and attrs.get('href'):
             self.assets.append((attrs['href'], 'stylesheet'))
         if tag == 'a' and attrs.get('href'):
@@ -92,20 +97,30 @@ def read(path, live):
     return file.read_text(), []
 
 
-def check_asset(url, kind, live):
+def check_asset(url, kind, live, seen=None):
     path = (ROOT / unquote(urlsplit(url).path).lstrip('/')).resolve()
     if not path.is_relative_to(ROOT) or not path.is_file() or not path.stat().st_size:
-        raise ValueError('missing or empty in the deployment source')
+        raise ValueError(f'{url} missing or empty in the deployment source')
     if live:
         request = Request(url, headers={'User-Agent': 'WillWest-Site-Check/1.0'})
         with urlopen(request, timeout=15) as response:
             mime = response.headers.get_content_type()
             if response.status != 200 or response.url != url:
                 raise ValueError(f'HTTP {response.status} at {response.url}')
-            if not (mime.startswith('image/') if kind == 'image' else mime == 'text/css'):
-                raise ValueError(f'unexpected content type {mime}')
+            expected = {'image': mime.startswith('image/'), 'stylesheet': mime == 'text/css',
+                        'script': mime in SCRIPT_TYPES}[kind]
+            if not expected:
+                raise ValueError(f'{url} unexpected content type {mime}')
             if response.read() != path.read_bytes():
-                raise ValueError('served bytes differ from the deployment source')
+                raise ValueError(f'{url} served bytes differ from the deployment source')
+    # a module pulls in its chunks itself, so they never appear in the HTML: follow them here
+    if kind == 'script':
+        seen = seen if seen is not None else set()
+        seen.add(url)
+        for spec in IMPORTS.findall(path.read_text()):
+            target = urljoin(url, spec)
+            if target not in seen:
+                check_asset(target, 'script', live, seen)
 
 
 def check_privacy(path, markup, page, errors):
@@ -142,9 +157,14 @@ def check(live):
         errors.append('robots.txt must advertise the canonical sitemap')
 
     missing_page, _ = read('/404.html', live)
-    check_privacy('/404.html', missing_page, Page(missing_page), errors)
+    missing = Page(missing_page)
+    check_privacy('/404.html', missing_page, missing, errors)
 
     assets = {}
+    for reference, kind in missing.assets:
+        target, _ = urldefrag(urljoin(ORIGIN + '/404.html', reference))
+        if target.startswith(ORIGIN + '/'):
+            assets.setdefault((target, kind), '/404.html')
     links = {}
     titles = Counter()
     for path in sorted(paths):
@@ -200,7 +220,8 @@ def check(live):
     if errors:
         raise ValueError('\n'.join(errors))
     counts = Counter(kind for _, kind in assets)
-    print(f'Passed: {len(paths)} pages, {counts["image"]} images, {counts["stylesheet"]} stylesheets, robots.txt and sitemap.xml.')
+    print(f'Passed: {len(paths)} pages, {counts["image"]} images, {counts["stylesheet"]} stylesheets, '
+          f'{counts["script"]} scripts, robots.txt and sitemap.xml.')
 
 
 if __name__ == '__main__':

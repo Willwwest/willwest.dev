@@ -17,7 +17,10 @@ def hashes(markup, tag):
 
 
 def policy_tags(markup):
-    scripts = ' '.join(hashes(markup, 'script')) or "'none'"
+    # 'self' only on pages that load a script file (the three.js scenes in /assets/fx), so a
+    # page with no script of its own keeps script-src 'none'. Inline blocks stay hash-pinned.
+    external = ["'self'"] if re.search(r'<script\b[^>]*\bsrc=', markup) else []
+    scripts = ' '.join([*external, *hashes(markup, 'script')]) or "'none'"
     styles = ' '.join(["'self'", *hashes(markup, 'style')])
     policy = (f"default-src 'none'; script-src {scripts}; style-src {styles}; "
               "img-src 'self' data:; base-uri 'none'; form-action 'none'")
