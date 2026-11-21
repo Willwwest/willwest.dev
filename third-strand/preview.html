@@ -75,10 +75,7 @@ h2 em,h1 em{font-style:italic;font-weight:400;color:var(--latte)}
 
 /* ---------- hero ---------- */
 .hero{min-height:100svh;background:radial-gradient(120% 90% at 75% 10%,#4a2a29 0%,var(--espresso) 45%,var(--night) 100%);color:var(--cream);display:flex;align-items:center;padding:140px 0 110px;overflow:hidden}
-.lights{position:absolute;inset:0 0 auto;width:100%;height:200px;z-index:0;pointer-events:none}
-.lights path{fill:none;stroke:rgba(243,235,224,.18);stroke-width:1.2}
-.bulb{fill:#ffd9a0;filter:url(#glow);animation:twinkle 5s ease-in-out infinite}
-@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.55}}
+.lights{position:absolute;inset:0 0 auto;width:100%;height:230px;z-index:0;pointer-events:none;display:block}
 .hero .wrap{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(40px,6vw,90px);align-items:center}
 .hero h1{font-size:clamp(54px,8.2vw,118px);margin:26px 0 30px}
 .hero h1 .line{display:block;overflow:hidden;padding-bottom:.06em}
@@ -342,11 +339,7 @@ const SHOP = {
 <main id="top">
 
 <section class="hero grain">
-  <svg class="lights" viewBox="0 0 1440 200" aria-hidden="true">
-    <defs><filter id="glow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-    <path id="wire1" d="M-20 30 Q 360 150 740 40 T 1460 50"/>
-    <g id="bulbs"></g>
-  </svg>
+  <canvas class="lights" aria-hidden="true"></canvas>
   <div class="wrap">
     <div>
       <span class="eyebrow fade">Coffee · Co. &nbsp;—&nbsp; Glendale, Arizona</span>
@@ -531,28 +524,115 @@ const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
 const words = ["Espresso","Matcha","Chai","The Dani","The Presley","The Mom & Pop","Pumpkin Porch","Oversized cookies","Lotus","Italian sodas"];
 document.getElementById("marquee").innerHTML = [...words,...words].map(w=>`<span>${w}</span>`).join("");
 
-/* string lights along the wire, drawn to the real width so bulbs stay round */
+/* string lights: a small rope simulation (verlet) so the strands hang naturally
+   and sway in a light breeze. Each bulb hangs from the wire, swings a little,
+   and glows with a soft flicker. Canvas 2D, no libraries. */
 (function(){
-  const svg = document.querySelector(".lights"), wire = document.getElementById("wire1"), g = document.getElementById("bulbs");
-  function draw(){
-    const W = Math.max(320, svg.clientWidth), narrow = W < 700;
-    svg.setAttribute("viewBox", `0 0 ${W} 200`);
-    // phones: one shallow swag hung just below the top bar, clear of the logo; wider screens: two scallops
-    wire.setAttribute("d", narrow
-      ? `M-10 98 Q ${W/2} 158 ${W+10} 98`
-      : `M-20 30 Q ${W*0.25} 150 ${W*0.514} 40 T ${W+20} 50`);
-    g.replaceChildren();
-    const L = wire.getTotalLength(), n = Math.round(W / (narrow ? 48 : 65));
-    for (let i = 1; i < n; i++) {
-      const p = wire.getPointAtLength(L*i/n);
-      const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
-      c.setAttribute("cx",p.x); c.setAttribute("cy",p.y+(narrow?7:9)); c.setAttribute("r",narrow?2.8:3.4); c.setAttribute("class","bulb");
-      c.style.animationDelay = (i*0.37 % 5)+"s";
-      g.appendChild(c);
+  const cv = document.querySelector(".lights"), ctx = cv.getContext("2d");
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W = 0, H = 230, dpr = 1, ropes = [], bulbs = [], t = 0, running = false, raf = 0;
+
+  function rope(ax, ay, bx, by, sag, spacing){
+    const chord = Math.hypot(bx-ax, by-ay), len = chord + 8*sag*sag/(3*chord);
+    const n = Math.max(8, Math.round(len / 18)), seg = len / n, pts = [];
+    for (let i = 0; i <= n; i++) {           // start on a parabola so it settles fast
+      const u = i/n, x = ax + (bx-ax)*u, y = ay + (by-ay)*u + 4*sag*u*(1-u);
+      pts.push({x, y, px:x, py:y});
+    }
+    const r = {pts, seg, ax, ay, bx, by};
+    const every = Math.max(2, Math.round(spacing / seg));
+    for (let i = every; i < n - every/2; i += every) bulbs.push({r, i, a:0, va:0, ph:Math.random()*99, f:1});
+    return r;
+  }
+
+  function layout(){
+    W = cv.clientWidth; dpr = Math.min(2, devicePixelRatio || 1);
+    cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
+    ropes = []; bulbs = [];
+    if (W < 700) ropes.push(rope(-10, 100, W+10, 100, 30, 48));          // phones: one swag below the top bar
+    else {
+      const m = W*0.514;
+      ropes.push(rope(-20, 26, m, 34, 62, 64), rope(m, 34, W+20, 44, 56, 64));
+    }
+    for (let k = 0; k < 240; k++) step(1/60, true);                    // settle before the first frame
+  }
+
+  // gentle, layered breeze: slow swell plus a little gust, varying along the wire
+  const wind = (x, t) => 26*Math.sin(t*0.55 + x*0.0021) + 14*Math.sin(t*1.27 + x*0.0057 + 1.3) + 6*Math.sin(t*2.9 + x*0.013);
+
+  function step(dt, settling){
+    t += dt;
+    for (const r of ropes) {
+      const P = r.pts, n = P.length - 1;
+      for (let i = 1; i < n; i++) {
+        const p = P[i], vx = (p.x - p.px)*0.985, vy = (p.y - p.py)*0.985;
+        p.px = p.x; p.py = p.y;
+        const w = settling || still ? 0 : wind(p.x, t);
+        p.x += vx + w*dt*dt*0.8;
+        p.y += vy + (380 + w*0.2)*dt*dt;
+      }
+      P[0].x = r.ax; P[0].y = r.ay; P[n].x = r.bx; P[n].y = r.by;
+      for (let k = 0; k < 40; k++) for (let i = 0; i < n; i++) {
+        const a = P[i], b = P[i+1], dx = b.x-a.x, dy = b.y-a.y, d = Math.hypot(dx,dy) || 1, diff = (d - r.seg)/d*0.5;
+        if (i > 0) { a.x += dx*diff; a.y += dy*diff; }
+        if (i+1 < n) { b.x -= dx*diff; b.y -= dy*diff; }
+      }
+    }
+    // each bulb is a short pendulum hanging from its point, nudged by the wire's motion
+    for (const b of bulbs) {
+      const p = b.r.pts[b.i], ax = (p.x - p.px)/dt;
+      b.va += (-9*Math.sin(b.a) - 0.9*b.va - ax*0.012)*dt;
+      b.a += b.va*dt; b.a = Math.max(-0.6, Math.min(0.6, b.a));
+      b.f = 0.9 + 0.07*Math.sin(t*3.1 + b.ph) + 0.03*Math.sin(t*11.3 + b.ph*1.7);   // soft flicker
     }
   }
-  draw();
-  let t; addEventListener("resize", () => { clearTimeout(t); t = setTimeout(draw, 120); });
+
+  function draw(){
+    ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
+    // wire
+    ctx.lineWidth = 1.2; ctx.strokeStyle = "rgba(243,235,224,.2)"; ctx.lineCap = "round";
+    for (const r of ropes) {
+      const P = r.pts; ctx.beginPath(); ctx.moveTo(P[0].x, P[0].y);
+      for (let i = 1; i < P.length-1; i++) { const mx = (P[i].x+P[i+1].x)/2, my = (P[i].y+P[i+1].y)/2; ctx.quadraticCurveTo(P[i].x, P[i].y, mx, my); }
+      ctx.lineTo(P[P.length-1].x, P[P.length-1].y); ctx.stroke();
+    }
+    const small = W < 700, L = small ? 7 : 9, R = small ? 2.6 : 3.2;
+    // sockets and glass
+    for (const b of bulbs) {
+      const p = b.r.pts[b.i], bx = p.x + Math.sin(b.a)*L, by = p.y + Math.cos(b.a)*L;
+      b.x = bx; b.y = by;
+      ctx.strokeStyle = "rgba(30,18,18,.9)"; ctx.lineWidth = small ? 2 : 2.4;
+      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + Math.sin(b.a)*(L-R), p.y + Math.cos(b.a)*(L-R)); ctx.stroke();
+    }
+    // glow (additive)
+    ctx.globalCompositeOperation = "lighter";
+    for (const b of bulbs) {
+      const g = small ? 16 : 22, grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, g);
+      grad.addColorStop(0, `rgba(255,196,120,${0.42*b.f})`); grad.addColorStop(0.35, `rgba(255,170,90,${0.14*b.f})`); grad.addColorStop(1, "rgba(255,150,70,0)");
+      ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(b.x, b.y, g, 0, 7); ctx.fill();
+    }
+    ctx.globalCompositeOperation = "source-over";
+    for (const b of bulbs) {
+      ctx.fillStyle = `rgba(255,226,170,${0.85 + 0.15*b.f})`; ctx.beginPath(); ctx.ellipse(b.x, b.y, R*0.85, R, b.a, 0, 7); ctx.fill();
+      ctx.fillStyle = `rgba(255,252,236,${0.8*b.f})`; ctx.beginPath(); ctx.arc(b.x - R*0.15, b.y - R*0.2, R*0.38, 0, 7); ctx.fill();
+    }
+  }
+
+  let last = 0;
+  function frame(now){
+    const dt = Math.min(1/30, (now - (last || now))/1000) || 1/60; last = now;
+    step(dt); draw();
+    cv.dataset.low = Math.round(Math.max(...bulbs.map(b => b.y || 0)));
+    if (running) raf = requestAnimationFrame(frame);
+  }
+  function start(){ if (running || still) return; running = true; last = 0; raf = requestAnimationFrame(frame); }
+  function stop(){ running = false; cancelAnimationFrame(raf); }
+
+  layout(); draw();
+  // only animate while the hero is on screen and the tab is visible
+  new IntersectionObserver(([e]) => e.isIntersecting ? start() : stop()).observe(cv);
+  document.addEventListener("visibilitychange", () => document.hidden ? stop() : start());
+  let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (cv.clientWidth !== W) { layout(); draw(); } }, 150); });
 })();
 
 /* signatures */
