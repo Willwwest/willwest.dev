@@ -102,6 +102,7 @@ h2 em,h1 em{font-style:italic;font-weight:400;color:var(--latte)}
 .scroll-cue{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);z-index:1;display:flex;flex-direction:column;align-items:center;gap:10px;font:600 10px var(--sans);letter-spacing:.34em;color:rgba(243,235,224,.5);text-decoration:none}
 .scroll-cue i{width:1px;height:42px;background:linear-gradient(var(--latte),transparent);animation:drip 2.4s var(--ease) infinite;transform-origin:top}
 @keyframes drip{0%{transform:scaleY(0)}60%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
+@media (max-width:699px){.hero{padding-top:172px}}
 @media (max-width:900px){
   .hero .wrap{grid-template-columns:1fr}
   .hero-art{justify-self:center;max-width:400px;margin-top:10px}
@@ -341,7 +342,7 @@ const SHOP = {
 <main id="top">
 
 <section class="hero grain">
-  <svg class="lights" viewBox="0 0 1440 200" preserveAspectRatio="none" aria-hidden="true">
+  <svg class="lights" viewBox="0 0 1440 200" aria-hidden="true">
     <defs><filter id="glow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
     <path id="wire1" d="M-20 30 Q 360 150 740 40 T 1460 50"/>
     <g id="bulbs"></g>
@@ -530,17 +531,28 @@ const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
 const words = ["Espresso","Matcha","Chai","The Dani","The Presley","The Mom & Pop","Pumpkin Porch","Oversized cookies","Lotus","Italian sodas"];
 document.getElementById("marquee").innerHTML = [...words,...words].map(w=>`<span>${w}</span>`).join("");
 
-/* string lights along the wire */
+/* string lights along the wire, drawn to the real width so bulbs stay round */
 (function(){
-  const wire = document.getElementById("wire1"), g = document.getElementById("bulbs");
-  const L = wire.getTotalLength(), n = 22;
-  for(let i=1;i<n;i++){
-    const p = wire.getPointAtLength(L*i/n);
-    const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
-    c.setAttribute("cx",p.x); c.setAttribute("cy",p.y+9); c.setAttribute("r",3.4); c.setAttribute("class","bulb");
-    c.style.animationDelay = (i*0.37 % 5)+"s";
-    g.appendChild(c);
+  const svg = document.querySelector(".lights"), wire = document.getElementById("wire1"), g = document.getElementById("bulbs");
+  function draw(){
+    const W = Math.max(320, svg.clientWidth), narrow = W < 700;
+    svg.setAttribute("viewBox", `0 0 ${W} 200`);
+    // phones: one shallow swag hung just below the top bar, clear of the logo; wider screens: two scallops
+    wire.setAttribute("d", narrow
+      ? `M-10 98 Q ${W/2} 158 ${W+10} 98`
+      : `M-20 30 Q ${W*0.25} 150 ${W*0.514} 40 T ${W+20} 50`);
+    g.replaceChildren();
+    const L = wire.getTotalLength(), n = Math.round(W / (narrow ? 48 : 65));
+    for (let i = 1; i < n; i++) {
+      const p = wire.getPointAtLength(L*i/n);
+      const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
+      c.setAttribute("cx",p.x); c.setAttribute("cy",p.y+(narrow?7:9)); c.setAttribute("r",narrow?2.8:3.4); c.setAttribute("class","bulb");
+      c.style.animationDelay = (i*0.37 % 5)+"s";
+      g.appendChild(c);
+    }
   }
+  draw();
+  let t; addEventListener("resize", () => { clearTimeout(t); t = setTimeout(draw, 120); });
 })();
 
 /* signatures */
