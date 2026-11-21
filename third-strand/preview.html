@@ -23,6 +23,7 @@
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{font-family:var(--sans);font-weight:300;font-size:17px;line-height:1.7;color:var(--ink);background:var(--paper);overflow-x:hidden}
 img{display:block;max-width:100%}
+[hidden]{display:none!important}
 a{color:inherit}
 .wrap{width:min(var(--max),100% - 2*var(--gut));margin-inline:auto}
 .eyebrow{font-family:var(--sans);font-weight:600;font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--latte)}
@@ -241,6 +242,22 @@ footer nav a{font:400 12px var(--sans);letter-spacing:.26em;text-transform:upper
 footer nav a:hover{color:var(--cream)}
 footer .legal{font-size:12.5px;padding-top:30px;border-top:1px solid rgba(243,235,224,.08)}
 
+/* ---------- phone action bar ---------- */
+.actionbar{display:none}
+@media (max-width:860px){
+  .actionbar{position:fixed;z-index:60;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));display:flex;gap:6px;padding:6px;border-radius:22px;
+    background:rgba(29,16,17,.82);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);
+    box-shadow:0 18px 40px -12px rgba(0,0,0,.6),inset 0 0 0 1px rgba(243,235,224,.1);
+    transform:translateY(calc(100% + 30px));transition:transform .6s var(--ease)}
+  .actionbar.show{transform:none}
+  .actionbar a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:58px;border-radius:16px;
+    text-decoration:none;color:var(--cream);font:600 10.5px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;transition:background .3s}
+  .actionbar a:active{background:rgba(243,235,224,.1)}
+  .actionbar a.primary{flex:1.35;background:var(--cream);color:var(--espresso)}
+  .actionbar svg{width:20px;height:20px}
+  footer{padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+}
+
 /* ---------- reveal ---------- */
 .rv{opacity:0;transform:translateY(40px);transition:opacity 1.2s var(--ease),transform 1.2s var(--ease)}
 .rv.in{opacity:1;transform:none}
@@ -267,6 +284,7 @@ const SHOP = {
   landmark: "Right next door to The LAB",
   mapsQuery: "Third Strand Coffee Co, Deer Valley Rd, Glendale, AZ",
   phone: "",                            // e.g. "(623) 555-0100"
+  orderUrl: "",                         // their Square Online ordering link, e.g. "https://thirdstrandcoffee.square.site"
   instagram: "",                        // e.g. "https://instagram.com/thirdstrandcoffee"
   hours: []                             // e.g. [["Mon – Fri","6 am – 3 pm"],["Sat","7 am – 2 pm"],["Sun","Closed"]]
 };
@@ -284,7 +302,7 @@ const SHOP = {
       <li><a href="#menu">Menu</a></li>
       <li><a href="#visit">Visit</a></li>
     </ul>
-    <a class="btn btn-line" href="#visit">Find us</a>
+    <a class="btn btn-line" href="#visit" id="navCta">Find us</a>
   </div>
 </header>
 
@@ -304,6 +322,7 @@ const SHOP = {
       <div class="ctas fade">
         <a class="btn btn-fill" href="#menu">See the menu <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
         <a class="btn btn-line" href="#visit">Plan a visit</a>
+        <a class="btn btn-line" id="heroOrder" target="_blank" rel="noopener" hidden>Order ahead</a>
       </div>
     </div>
     <div class="hero-art">
@@ -417,6 +436,12 @@ const SHOP = {
 </section>
 
 </main>
+
+<nav class="actionbar" id="actionbar" aria-label="Quick actions">
+  <a id="abDir" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Directions</a>
+  <a id="abCall" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg>Call</a>
+  <a id="abOrder" class="primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9h12v5a6 6 0 0 1-6 6h0a6 6 0 0 1-6-6V9Z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 3c0 1.5 1 1.5 1 3M12 3c0 1.5 1 1.5 1 3"/></svg><span>Menu</span></a>
+</nav>
 
 <footer class="grain">
   <div class="wrap">
@@ -549,6 +574,23 @@ document.getElementById("milks").innerHTML = MILKS.map(m=>`<span>${m}</span>`).j
   document.getElementById("facts").innerHTML = f.map(([t,d])=>`<div class="fact"><dt>${t}</dt><dd>${d}</dd></div>`).join("");
   document.getElementById("directions").href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(SHOP.mapsQuery);
   if (SHOP.instagram){const a=document.getElementById("ig");a.href=SHOP.instagram;a.hidden=false}
+
+  // phone action bar: Directions · Call · Order ahead (Square Online)
+  const maps = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(SHOP.mapsQuery);
+  document.getElementById("abDir").href = maps;
+  if (SHOP.phone){const c=document.getElementById("abCall");c.href="tel:"+SHOP.phone.replace(/[^\d+]/g,"");c.hidden=false}
+  const ord = document.getElementById("abOrder");
+  if (SHOP.orderUrl){
+    ord.href = SHOP.orderUrl; ord.target = "_blank"; ord.rel = "noopener";
+    ord.querySelector("span").textContent = "Order ahead";
+    const h=document.getElementById("heroOrder"); h.href=SHOP.orderUrl; h.hidden=false;
+    const n=document.getElementById("navCta"); n.href=SHOP.orderUrl; n.target="_blank"; n.rel="noopener"; n.textContent="Order ahead";
+  } else {
+    ord.href = "#menu";   // until the shop's Square link is in, the main button opens the menu
+  }
+  const bar = document.getElementById("actionbar");
+  const showBar = () => bar.classList.toggle("show", scrollY > innerHeight * 0.55);
+  addEventListener("scroll", showBar, {passive:true}); showBar();
   document.getElementById("yr").textContent = new Date().getFullYear();
 })();
 
