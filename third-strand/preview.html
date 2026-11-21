@@ -32,6 +32,8 @@ h2{font-size:clamp(40px,6vw,76px)}
 h2 em,h1 em{font-style:italic;font-weight:400;color:var(--latte)}
 .btn{display:inline-flex;align-items:center;gap:12px;padding:17px 30px 15px;border-radius:999px;font:600 12px/1 var(--sans);letter-spacing:.26em;text-transform:uppercase;text-decoration:none;transition:transform .5s var(--ease),background .4s,color .4s,box-shadow .5s}
 .btn:hover{transform:translateY(-2px)}
+.btn,.nav ul a,.status{white-space:nowrap}
+@media (max-width:380px){.btn{padding:16px 22px 14px;letter-spacing:.18em}}
 .btn-fill{background:var(--cream);color:var(--espresso);box-shadow:0 10px 40px -12px rgba(243,235,224,.45)}
 .btn-fill:hover{background:#fff}
 .btn-line{border:1px solid rgba(243,235,224,.35);color:var(--cream)}
@@ -67,7 +69,8 @@ h2 em,h1 em{font-style:italic;font-weight:400;color:var(--latte)}
 .nav-call:hover{color:var(--cream)}
 .nav-call svg,.nav-cta .btn svg{width:15px;height:15px;flex:none}
 @media (max-width:1240px){.nav-call span{display:none}.nav-call{margin-right:0;width:44px;height:44px;justify-content:center;border-radius:50%;border:1px solid rgba(243,235,224,.35)}}
-@media (max-width:1100px){.nav ul{display:none}}
+@media (max-width:1240px){.nav ul{gap:26px}.nav ul a{letter-spacing:.16em}}
+@media (max-width:1180px){.nav ul{display:none}}
 @media (max-width:860px){.nav-cta{display:none}}
 
 /* ---------- hero ---------- */
@@ -174,6 +177,9 @@ h2 em,h1 em{font-style:italic;font-weight:400;color:var(--latte)}
 .status.open i{background:#8fd18a;box-shadow:0 0 0 0 rgba(143,209,138,.6);animation:pulse 2.4s infinite}
 @keyframes pulse{70%{box-shadow:0 0 0 9px rgba(143,209,138,0)}100%{box-shadow:0 0 0 0 rgba(143,209,138,0)}}
 .hero .status{margin-top:22px}
+@media (max-width:480px){.status{letter-spacing:.1em;padding:9px 13px 7px;font-size:10.5px}}
+@media (max-width:400px){.status{white-space:normal;line-height:1.5;border-radius:16px}}
+.visit-card .info{min-width:0}
 .visit-card .status{margin:-12px 0 30px}
 .item .range{font:500 17px var(--serif);color:var(--espresso);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
 .item .thumb.letter{display:grid;place-items:center;font:italic 500 24px var(--serif);color:var(--latte)}
