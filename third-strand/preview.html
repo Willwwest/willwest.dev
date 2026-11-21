@@ -170,6 +170,20 @@ h2 em,h1 em{font-style:italic;font-weight:400;color:var(--latte)}
 /* ---------- menu ---------- */
 .menu{padding:clamp(100px,13vw,170px) 0;background:var(--paper)}
 .menu .head{align-items:center}
+.status{display:inline-flex;align-items:center;gap:10px;padding:9px 16px 7px;border-radius:999px;font:600 11px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;background:rgba(243,235,224,.08);color:var(--cream);box-shadow:inset 0 0 0 1px rgba(243,235,224,.14)}
+.status i{width:8px;height:8px;border-radius:50%;background:#c9a07a;flex:none}
+.status.open i{background:#8fd18a;box-shadow:0 0 0 0 rgba(143,209,138,.6);animation:pulse 2.4s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 9px rgba(143,209,138,0)}100%{box-shadow:0 0 0 0 rgba(143,209,138,0)}}
+.hero .status{margin-top:22px}
+.visit-card .status{margin:-12px 0 30px}
+.item .range{font:500 17px var(--serif);color:var(--espresso);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.item .thumb.letter{display:grid;place-items:center;font:italic 500 24px var(--serif);color:var(--latte)}
+.item .note{text-align:left;margin-top:5px}
+.combo{margin-top:clamp(60px,8vw,90px);display:grid;grid-template-columns:1fr auto;gap:30px;align-items:center;background:var(--espresso);color:var(--cream);border-radius:28px;padding:clamp(30px,4vw,48px) clamp(28px,5vw,60px)}
+.combo h3{font-size:clamp(28px,3.4vw,40px)}
+.combo h3 em{font-style:italic;font-weight:400;color:var(--latte-2)}
+.combo p{color:rgba(243,235,224,.7);margin-top:8px;max-width:34em}
+@media (max-width:700px){.combo{grid-template-columns:1fr}}
 .toggle{position:relative;display:inline-grid;grid-template-columns:1fr 1fr;background:var(--cream);border-radius:999px;padding:5px;border:1px solid #eadfce}
 .toggle button{position:relative;z-index:1;border:0;background:none;padding:14px 30px 12px;font:600 12px/1 var(--sans);letter-spacing:.26em;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:color .4s}
 .toggle button[aria-pressed="true"]{color:var(--cream)}
@@ -187,7 +201,7 @@ h2 em,h1 em{font-style:italic;font-weight:400;color:var(--latte)}
 .item p{font-size:14px;line-height:1.5;color:var(--muted)}
 .item .px{display:flex;font:500 16px var(--serif);color:var(--espresso);font-variant-numeric:tabular-nums}
 .item .px span{width:58px;text-align:right}
-.item .note{font:600 10px var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--latte);text-align:right}
+.item .note{font:600 10px var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--latte);text-align:left}
 .extras{margin-top:clamp(60px,8vw,90px);display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
 .extras>div{background:var(--cream);border-radius:22px;padding:28px 32px}
 .extras h4{font:500 22px var(--serif);color:var(--espresso);margin-bottom:12px}
@@ -285,14 +299,17 @@ footer .legal{font-size:12.5px;padding-top:30px;border-top:1px solid rgba(243,23
 -->
 <script>
 const SHOP = {
-  street: "Deer Valley Rd",            // full street address once confirmed, e.g. "6760 W Deer Valley Rd, Suite ___"
-  city: "Glendale, Arizona",
+  // From the shop's own ordering page (cash.app/$thirdstrandcoffee, linked from their Google listing), Nov 20, 2026.
+  street: "6760 W Deer Valley Rd, Ste M, Unit 1",
+  city: "Glendale, AZ 85310",
   landmark: "Right next door to The LAB",
-  mapsQuery: "Third Strand Coffee Co, Deer Valley Rd, Glendale, AZ",
-  phone: "(623) 555-0100",              // PLACEHOLDER (a 555-01xx number that reaches no one): replace with the shop's real number
-  orderUrl: "",                         // their Square Online ordering link, e.g. "https://thirdstrandcoffee.square.site"
-  instagram: "",                        // e.g. "https://instagram.com/thirdstrandcoffee"
-  hours: []                             // e.g. [["Mon – Fri","6 am – 3 pm"],["Sat","7 am – 2 pm"],["Sun","Closed"]]
+  mapsQuery: "Third Strand Coffee, 6760 W Deer Valley Rd Ste M Unit 1, Glendale, AZ 85310",
+  phone: "(623) 695-7624",
+  orderUrl: "https://cash.app/$thirdstrandcoffee",   // their Square / Cash App order-ahead page
+  instagram: "",
+  // Opening hours by weekday (0 = Sunday), 24-hour clock, Arizona time. null = closed.
+  week: [null, [7,12], [7,18], [7,18], [7,18], [7,18], [7,12]],
+  hours: [["Monday","7 am – 12 pm"],["Tuesday – Friday","7 am – 6 pm"],["Saturday","7 am – 12 pm"],["Sunday","Closed"]]
 };
 </script>
 
@@ -330,10 +347,10 @@ const SHOP = {
       <h1><span class="line"><span>Poured</span></span><span class="line"><span>with <em>heart.</em></span></span></h1>
       <p class="lede fade">Espresso, creamy milk and a little something sweet, woven into one cup. Signature lattes, matcha, chai, iced teas and Italian sodas on Deer Valley Rd.</p>
       <div class="ctas fade">
-        <a class="btn btn-fill" href="#menu">See the menu <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
-        <a class="btn btn-line" href="#visit">Plan a visit</a>
-        <a class="btn btn-line" id="heroOrder" target="_blank" rel="noopener" hidden>Order ahead</a>
+        <a class="btn btn-fill" id="heroOrder" target="_blank" rel="noopener" hidden>Order ahead <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+        <a class="btn btn-line" href="#menu">See the menu</a>
       </div>
+      <div class="status fade" data-status hidden><i></i><span></span></div>
     </div>
     <div class="hero-art">
       <div class="arch"><img src="assets/drinks/the-presley.webp" alt="An iced caramel latte in a caramel-lined cup" fetchpriority="high"></div>
@@ -399,18 +416,15 @@ const SHOP = {
   <div class="wrap">
     <div class="head rv">
       <div><span class="eyebrow">The full board</span><h2>The <em>menu.</em></h2></div>
-      <div class="toggle" id="toggle" role="group" aria-label="Hot or iced prices">
-        <span class="pill"></span>
-        <button type="button" aria-pressed="true" data-mode="hot">Hot</button>
-        <button type="button" aria-pressed="false" data-mode="iced">Iced</button>
-      </div>
+      <a class="btn btn-dark" data-order href="#visit">Order ahead <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
     </div>
     <div class="menu-grid" id="menuGrid"></div>
-    <div class="extras rv">
-      <div><h4>Make it yours</h4><div class="chips" id="extras"></div></div>
-      <div><h4>Any milk, no charge</h4><div class="chips" id="milks"></div></div>
+    <div class="combo rv">
+      <div><span class="eyebrow">Cookie + drink combo</span><h3>Add an <em>oversized</em> cookie.</h3>
+        <p>Most drinks come as a combo with one of the house cookies, from The Classic One to The Mama Bear. Pick yours when you order.</p></div>
+      <a class="btn btn-fill" data-order href="#visit">Order ahead</a>
     </div>
-    <p class="fine">Prices in US dollars, before tax. Menu and prices change with the seasons; the board in the shop is always right.</p>
+    <p class="fine">Prices in US dollars, before tax, from smallest to largest size. Menu and prices change with the seasons; the board in the shop is always right.</p>
   </div>
 </section>
 
@@ -434,6 +448,7 @@ const SHOP = {
       <div class="info">
         <span class="eyebrow">Come on in</span>
         <h2>Visit <em>us.</em></h2>
+        <div class="status" data-status hidden><i></i><span></span></div>
         <dl class="facts" id="facts"></dl>
         <a class="btn btn-fill" id="directions" target="_blank" rel="noopener">Get directions <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 11 11 5M6 5h5v5"/></svg></a>
       </div>
@@ -463,49 +478,51 @@ const SHOP = {
 </footer>
 
 <script>
-/* ---------- the board (from the shop's menu, Nov 2026) ---------- */
-const P = { // [hot 10/12/16 oz] , [iced 16/20/24 oz]
-  coffee:   {hot:[5,5.5,6],       iced:[6,6.5,7]},
-  americano:{hot:[4,4.25,4.5],    iced:[4.5,5,5.5]},
-  seasonal: {hot:[5.75,6.25,6.75],iced:[6.75,7.25,7.75]},
-  seasIced: {iced:[6.75,7.25,7.75]},
-  tea:      {iced:[3.5,4,4.5]},
-  lotus:    {iced:[6,6.5,7]},
-  soda:     {iced:[5.5,6,6.5]},
-};
+/* ---------- the menu (from the shop's ordering page, Nov 20, 2026) ----------
+   [name, description, price low, price high, photo slug or "", "hot or iced" | "iced" | ""] */
 const MENU = [
-  ["Espresso drinks", [
-    ["Latte","Espresso with creamy steamed milk","coffee","latte"],
-    ["Breve","Espresso with half & half for an extra creamy finish","coffee","breve"],
-    ["Americano","Bold espresso with smooth water for a classic taste","americano","americano"]]],
   ["Signature drinks", [
-    ["The Dani","Espresso and creamy half & half with sweet notes of Irish cream and white chocolate","coffee","the-dani"],
-    ["The Presley","Espresso and creamy milk with sweet caramel, served in a caramel-lined cup","coffee","the-presley"],
-    ["The Mom and Pop","Espresso, creamy milk, sweet cherry almond and almond cold foam","coffee","the-mom-and-pop"]]],
-  ["Seasonal favorites", [
-    ["Banana Daydream Latte","Espresso and creamy milk with sweet banana, topped with banana cold foam","seasonal","banana-daydream-latte"],
-    ["Maple Butter Pecan Latte","Espresso and creamy milk with buttery pecan, topped with maple cold foam","seasonal","maple-butter-pecan-latte"],
-    ["Pumpkin Porch Latte","Espresso and creamy milk with warm pumpkin pie spice","seasonal","pumpkin-porch-latte"],
-    ["Witches Brew","Lotus with green apple, caramel and club soda","seasIced","witches-brew"],
-    ["Apple Orchard Black Tea","Refreshing black tea with apple and caramel","seasonal","apple-orchard-black-tea"]]],
+    ["The Dani","Irish cream, white chocolate sauce, espresso and creamy half-and-half",5,7,"the-dani","Hot or iced"],
+    ["The Presley","Espresso, creamy milk and buttery caramel",5,7,"the-presley","Hot or iced"],
+    ["The Mom & Pop","Espresso and creamy milk with a sweet cherry-almond twist",5,7,"the-mom-and-pop","Hot or iced"]]],
+  ["Seasonal specials", [
+    ["Banana Daydream Latte","Sweet banana espresso latte topped with creamy vanilla cold foam",5.75,7.75,"banana-daydream-latte","Hot or iced"],
+    ["Maple Butter Pecan Latte","Rich espresso and creamy milk with buttery pecan, topped with velvety cold foam",5.75,7.75,"maple-butter-pecan-latte","Hot or iced"],
+    ["Pumpkin Porch Latte","A cozy espresso latte with pumpkin pie flavor and creamy milk, topped with velvety cold foam",5.75,7.75,"pumpkin-porch-latte","Hot or iced"],
+    ["Witches Brew Lotus","Lotus energy with crisp green apple, a swirl of caramel and bubbly club soda",6.25,7.25,"witches-brew","Iced"],
+    ["Apple Orchard Black Tea","Black tea with crisp apple and a touch of rich caramel",6.75,7.75,"apple-orchard-black-tea","Iced"]]],
+  ["Espresso drinks", [
+    ["Latte","Freshly pulled espresso with creamy steamed milk",5,7,"latte","Hot or iced"],
+    ["Mocha","Rich chocolate sauce, bold espresso and creamy milk",5.5,7.5,"","Hot or iced"],
+    ["Caramel Macchiato","Espresso layered with creamy milk and vanilla, finished with a caramel drizzle",5.5,7.5,"","Hot or iced"],
+    ["Cappuccino","Espresso with steamed milk and a generous layer of foam",5,6,"",""],
+    ["Flat White","Espresso with silky steamed milk and fine microfoam",4.5,5.5,"",""],
+    ["Americano","Espresso and water",4,5.5,"americano","Hot or iced"],
+    ["Espresso","Freshly pulled espresso shots",2.5,3.5,"",""]]],
   ["Matcha & chai", [
-    ["Matcha latte","Smooth, earthy green tea blended with creamy milk","coffee","matcha-latte"],
-    ["Chai latte","Warm, aromatic chai spices blended with smooth, creamy milk","coffee","chai-latte"]]],
-  ["Iced teas", [
-    ["Black tea","Smooth, bold black tea","tea","black-tea"],
-    ["Green tea","Light, delicate green tea with a crisp, refreshing taste","tea","green-tea"]]],
-  ["Lotus & Italian sodas", [
-    ["Lotus Energy","Lotus energy flavor and sparkling soda","lotus","lotus-energy"],
-    ["Italian soda","Your choice of flavor with sparkling soda","soda","italian-soda"]]],
+    ["Matcha Latte","Smooth, earthy matcha blended with creamy milk",5,7,"matcha-latte","Hot or iced"],
+    ["Chai Latte","Spiced chai blended with creamy milk",5,7,"chai-latte","Hot or iced"]]],
+  ["Energy, refreshers & tea", [
+    ["Lotus Energy","A customizable energy drink made with Lotus concentrate and your choice of flavors",6,7,"lotus-energy","Iced"],
+    ["Italian Soda","Sparkling soda with your choice of fruit and classic syrup flavors",5.5,6.5,"italian-soda","Iced"],
+    ["Lemonade","Classic, or customized with your favorite fruit flavors",4,5,"","Iced"],
+    ["Iced Black Tea","Freshly brewed, unsweetened black tea; add your favorite flavors",3.5,4.5,"black-tea","Iced"]]],
+  ["Cookies & cake pops", [
+    ["The Classic One","Oversized chocolate chip cookie",4.25,4.25,"",""],
+    ["The Outdoorsman","Oversized s'mores cookie with marshmallows, graham crackers and chocolate",4.25,4.25,"",""],
+    ["The Quirky One","Oversized sweet-and-salty cookie with pretzels, butterscotch and chocolate chips",4.25,4.25,"",""],
+    ["The Mama Bear","Oversized stuffed s'mores cookie with marshmallow and chocolate",5,5,"",""],
+    ["The World Traveler","Oversized Biscoff cookie stuffed with cookie butter",5,5,"",""],
+    ["The Classic One, gluten free","Oversized gluten-free chocolate chip cookie",5,5,"",""],
+    ["Cake Pop","Handcrafted cake pop dipped in chocolate; flavors vary",3.75,3.75,"",""]]],
 ];
-const EXTRAS = [["Extra shot",1],["Extra sweet",.5],["Cold foam",1.25],["Extra syrup",1]];
-const MILKS = ["Whole","Half & half","Oat","Soy","Almond","Coconut","Lactose-free"];
-const money = n => "$" + (n % 1 ? n.toFixed(2) : n.toFixed(0)).replace(/\.00$/,"");
+const money = n => "$" + (n % 1 ? n.toFixed(2) : n.toFixed(0));
+const range = (a,b) => a===b ? money(a) : `${money(a)}–${money(b)}`;
 const img = slug => `assets/drinks/${slug}.webp`;
 const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
 
 /* marquee */
-const words = ["Espresso","Matcha","Chai","The Dani","The Presley","The Mom and Pop","Pumpkin Porch","Iced teas","Lotus","Italian sodas"];
+const words = ["Espresso","Matcha","Chai","The Dani","The Presley","The Mom & Pop","Pumpkin Porch","Oversized cookies","Lotus","Italian sodas"];
 document.getElementById("marquee").innerHTML = [...words,...words].map(w=>`<span>${w}</span>`).join("");
 
 /* string lights along the wire */
@@ -522,19 +539,19 @@ document.getElementById("marquee").innerHTML = [...words,...words].map(w=>`<span
 })();
 
 /* signatures */
-document.getElementById("sigs").innerHTML = MENU[1][1].map(([n,d,p,s],i)=>`
+document.getElementById("sigs").innerHTML = MENU[0][1].map(([n,d,lo,hi,s,t],i)=>`
   <article class="sig rv d${i+1}">
     <span class="num">No. ${i+1}</span>
     <figure><img src="${img(s)}" alt="${esc(n)}" loading="lazy"></figure>
     <div class="body"><h3>${esc(n)}</h3><p>${esc(d)}</p>
-      <div class="price">Hot or iced <b>from ${money(P[p].hot[0])}</b></div></div>
+      <div class="price">${t} <b>from ${money(lo)}</b></div></div>
   </article>`).join("");
 
 /* seasonal rail */
-document.getElementById("rail").innerHTML = MENU[2][1].map(([n,d,p,s])=>`
+document.getElementById("rail").innerHTML = MENU[1][1].map(([n,d,lo,hi,s,t])=>`
   <article class="season">
     <figure><img src="${img(s)}" alt="${esc(n)}" loading="lazy"></figure>
-    <span class="tag">${P[p].hot ? "Hot or iced" : "Iced"} · from ${money((P[p].hot||P[p].iced)[0])}</span>
+    <span class="tag">${t} · from ${money(lo)}</span>
     <h3>${esc(n)}</h3><p>${esc(d)}</p>
   </article>`).join("");
 const rail = document.getElementById("rail");
@@ -547,33 +564,34 @@ document.querySelectorAll(".rail-ctl button").forEach(b=>b.onclick=()=>rail.scro
 })();
 
 /* full menu */
-let mode = "hot";
-function renderMenu(){
-  const SIZES = {hot:["10 oz","12 oz","16 oz"], iced:["16 oz","20 oz","24 oz"]};
-  document.getElementById("menuGrid").innerHTML = MENU.map(([cat,items])=>{
-    // a category served only iced (teas, sodas) always shows its iced sizes
-    const catMode = items.some(([,,p])=>P[p][mode]) ? mode : (mode==="hot" ? "iced" : "hot");
-    return `<div class="cat rv in">
-      <h3>${esc(cat)} <small>${SIZES[catMode].map(s=>`<span>${s}</span>`).join("")}</small></h3>
-      ${items.map(([n,d,p,s])=>{
-        const own = P[p][catMode], m = own ? catMode : Object.keys(P[p])[0], row = P[p][m];
-        const tag = own ? (catMode!==mode ? "Served iced" : "") : `Served ${m} · ${SIZES[m][0]}–${SIZES[m][2]}`;
-        return `<div class="item">
-          <div class="thumb"><img src="${img(s)}" alt="" loading="lazy"></div>
-          <div><h4>${esc(n)}</h4><p>${esc(d)}</p>${tag?`<div class="note" style="text-align:left;margin-top:4px">${tag}</div>`:""}</div>
-          <div class="px">${row.map(v=>`<span>${money(v)}</span>`).join("")}</div>
-        </div>`}).join("")}
-    </div>`}).join("");
-}
-renderMenu();
-const tg = document.getElementById("toggle");
-tg.querySelectorAll("button").forEach(b=>b.onclick=()=>{
-  mode=b.dataset.mode; tg.classList.toggle("iced",mode==="iced");
-  tg.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));
-  renderMenu();
-});
-document.getElementById("extras").innerHTML = EXTRAS.map(([n,v])=>`<span>${n}<b>+${money(v)}</b></span>`).join("");
-document.getElementById("milks").innerHTML = MILKS.map(m=>`<span>${m}</span>`).join("");
+document.getElementById("menuGrid").innerHTML = MENU.map(([cat,items])=>`
+  <div class="cat rv in">
+    <h3>${esc(cat)}</h3>
+    ${items.map(([n,d,lo,hi,s,t])=>`<div class="item">
+        ${s ? `<div class="thumb"><img src="${img(s)}" alt="" loading="lazy"></div>` : `<div class="thumb letter" aria-hidden="true">${esc(n.replace(/^The /,"")[0])}</div>`}
+        <div><h4>${esc(n)}</h4><p>${esc(d)}</p>${t?`<div class="note">${t}</div>`:""}</div>
+        <div class="range">${range(lo,hi)}</div>
+      </div>`).join("")}
+  </div>`).join("");
+
+/* open now, from SHOP.week in Arizona time (no daylight saving) */
+(function(){
+  const fmt = h => h===12 ? "noon" : h<12 ? `${h} am` : `${h-12} pm`;
+  const now = new Date(new Date().toLocaleString("en-US",{timeZone:"America/Phoenix"}));
+  const d = now.getDay(), h = now.getHours() + now.getMinutes()/60, today = SHOP.week[d];
+  let open = false, text;
+  if (today && h >= today[0] && h < today[1]) { open = true; text = `Open now · until ${fmt(today[1])}`; }
+  else {
+    const names = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    for (let k = 0; k < 7; k++) {
+      const dd = (d + k) % 7, w = SHOP.week[dd];
+      if (!w || (k===0 && h >= w[0])) continue;
+      text = `Closed · opens ${k===0 ? "today" : k===1 ? "tomorrow" : names[dd]} at ${fmt(w[0])}`; break;
+    }
+  }
+  if (!text) return;
+  document.querySelectorAll("[data-status]").forEach(el=>{el.hidden=false;el.classList.toggle("open",open);el.querySelector("span").textContent=text});
+})();
 
 /* visit details from SHOP */
 (function(){
@@ -594,6 +612,7 @@ document.getElementById("milks").innerHTML = MILKS.map(m=>`<span>${m}</span>`).j
     ord.href = SHOP.orderUrl; ord.target = "_blank"; ord.rel = "noopener";
     ord.querySelector("span").textContent = "Order ahead";
     const h=document.getElementById("heroOrder"); h.href=SHOP.orderUrl; h.hidden=false;
+    document.querySelectorAll("[data-order]").forEach(a=>{a.href=SHOP.orderUrl;a.target="_blank";a.rel="noopener"});
     const n=document.getElementById("navOrder"); n.href=SHOP.orderUrl; n.target="_blank"; n.rel="noopener"; n.textContent="Order ahead";
   } else {
     ord.href = "#menu";   // until the shop's Square link is in, the main button opens the menu
