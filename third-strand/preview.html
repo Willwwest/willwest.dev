@@ -498,28 +498,28 @@ const MENU = [
     ["Apple Orchard Black Tea","Black tea with crisp apple and a touch of rich caramel",6.75,7.75,"apple-orchard-black-tea","Iced"]]],
   ["Espresso drinks", [
     ["Latte","Freshly pulled espresso with creamy steamed milk",5,7,"latte","Hot or iced"],
-    ["Mocha","Rich chocolate sauce, bold espresso and creamy milk",5.5,7.5,"","Hot or iced"],
-    ["Caramel Macchiato","Espresso layered with creamy milk and vanilla, finished with a caramel drizzle",5.5,7.5,"","Hot or iced"],
-    ["Cappuccino","Espresso with steamed milk and a generous layer of foam",5,6,"",""],
-    ["Flat White","Espresso with silky steamed milk and fine microfoam",4.5,5.5,"",""],
+    ["Mocha","Rich chocolate sauce, bold espresso and creamy milk",5.5,7.5,"mocha","Hot or iced"],
+    ["Caramel Macchiato","Espresso layered with creamy milk and vanilla, finished with a caramel drizzle",5.5,7.5,"caramel-macchiato","Hot or iced"],
+    ["Cappuccino","Espresso with steamed milk and a generous layer of foam",5,6,"cappuccino",""],
+    ["Flat White","Espresso with silky steamed milk and fine microfoam",4.5,5.5,"flat-white",""],
     ["Americano","Espresso and water",4,5.5,"americano","Hot or iced"],
-    ["Espresso","Freshly pulled espresso shots",2.5,3.5,"",""]]],
+    ["Espresso","Freshly pulled espresso shots",2.5,3.5,"espresso",""]]],
   ["Matcha & chai", [
     ["Matcha Latte","Smooth, earthy matcha blended with creamy milk",5,7,"matcha-latte","Hot or iced"],
     ["Chai Latte","Spiced chai blended with creamy milk",5,7,"chai-latte","Hot or iced"]]],
   ["Energy, refreshers & tea", [
     ["Lotus Energy","A customizable energy drink made with Lotus concentrate and your choice of flavors",6,7,"lotus-energy","Iced"],
     ["Italian Soda","Sparkling soda with your choice of fruit and classic syrup flavors",5.5,6.5,"italian-soda","Iced"],
-    ["Lemonade","Classic, or customized with your favorite fruit flavors",4,5,"","Iced"],
+    ["Lemonade","Classic, or customized with your favorite fruit flavors",4,5,"lemonade","Iced"],
     ["Iced Black Tea","Freshly brewed, unsweetened black tea; add your favorite flavors",3.5,4.5,"black-tea","Iced"]]],
   ["Cookies & cake pops", [
-    ["The Classic One","Oversized chocolate chip cookie",4.25,4.25,"",""],
-    ["The Outdoorsman","Oversized s'mores cookie with marshmallows, graham crackers and chocolate",4.25,4.25,"",""],
-    ["The Quirky One","Oversized sweet-and-salty cookie with pretzels, butterscotch and chocolate chips",4.25,4.25,"",""],
-    ["The Mama Bear","Oversized stuffed s'mores cookie with marshmallow and chocolate",5,5,"",""],
-    ["The World Traveler","Oversized Biscoff cookie stuffed with cookie butter",5,5,"",""],
+    ["The Classic One","Oversized chocolate chip cookie",4.25,4.25,"the-classic-one",""],
+    ["The Outdoorsman","Oversized s'mores cookie with marshmallows, graham crackers and chocolate",4.25,4.25,"the-outdoorsman",""],
+    ["The Quirky One","Oversized sweet-and-salty cookie with pretzels, butterscotch and chocolate chips",4.25,4.25,"the-quirky-one",""],
+    ["The Mama Bear","Oversized stuffed s'mores cookie with marshmallow and chocolate",5,5,"the-mama-bear",""],
+    ["The World Traveler","Oversized Biscoff cookie stuffed with cookie butter",5,5,"the-world-traveler",""],
     ["The Classic One, gluten free","Oversized gluten-free chocolate chip cookie",5,5,"",""],
-    ["Cake Pop","Handcrafted cake pop dipped in chocolate; flavors vary",3.75,3.75,"",""]]],
+    ["Cake Pop","Handcrafted cake pop dipped in chocolate; flavors vary",3.75,3.75,"cake-pop",""]]],
 ];
 const money = n => "$" + (n % 1 ? n.toFixed(2) : n.toFixed(0));
 const range = (a,b) => a===b ? money(a) : `${money(a)}–${money(b)}`;
