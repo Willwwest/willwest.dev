@@ -9,6 +9,19 @@
 <meta name="description" content="Espresso, matcha, chai, signature lattes and seasonal favorites, poured with heart on Deer Valley Rd in Glendale, Arizona.">
 <meta name="theme-color" content="#1d1011">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<script>
+/* Seasonal theme, picked from today's date in Arizona time. Preview any theme
+   with ?season=christmas, or turn themes off with ?season=none.
+   Christmas runs Nov 20 through Jan 6. */
+(function(){
+  const q = new URLSearchParams(location.search).get("season");
+  const az = new Date(new Date().toLocaleString("en-US",{timeZone:"America/Phoenix"}));
+  const m = az.getMonth(), d = az.getDate();
+  const auto = (m===10 && d>=20) || m===11 || (m===0 && d<=6) ? "christmas" : "";
+  const s = q === null ? auto : q === "none" ? "" : q;
+  if (s) document.documentElement.dataset.season = s;
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
@@ -292,6 +305,21 @@ footer .legal{font-size:12.5px;padding-top:30px;border-top:1px solid rgba(243,23
   .hero .fade,.arch,.orb,.seal{opacity:1}
 }
 :focus-visible{outline:2px solid var(--latte);outline-offset:4px;border-radius:6px}
+
+/* ---------- seasons: christmas ---------- */
+.bokeh{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block}
+.desert{display:block;width:100vw;height:220px;margin:-10px calc(50% - 50vw) 0}
+@media (max-width:699px){.desert{height:170px}}
+[data-season=christmas] .seal circle{fill:#24402f}
+[data-season=christmas] .hero h1 em{padding-right:.08em;margin-right:-.08em;color:transparent;-webkit-background-clip:text;background-clip:text;
+  background-image:linear-gradient(100deg,#c79f63 0%,#e9cc95 22%,#fff1d2 30%,#e2bf83 38%,#b88a52 55%,#e4c48c 78%,#c79f63 100%);background-size:260% 100%;background-position:100% 0;
+  animation:sheen 9s var(--ease) 1.6s infinite}
+@keyframes sheen{0%{background-position:100% 0}45%,100%{background-position:0 0}}
+[data-season=christmas] .marquee span::after{width:6px;height:9px;border-radius:50% 50% 50% 50%/40% 40% 60% 60%;border-top:2px solid #1c2a20;
+  background:var(--c);box-shadow:0 0 6px 1px var(--c),0 0 20px 4px color-mix(in srgb,var(--c) 40%,transparent);animation:bulb 4.8s ease-in-out var(--d) infinite}
+@keyframes bulb{0%,100%{opacity:.5;filter:saturate(.8)}50%{opacity:1;filter:saturate(1.1)}}
+[data-season=christmas] footer nav{margin-bottom:20px}
+@media (max-width:480px){#heroEyebrow .loc{display:none}}
 </style>
 </head>
 <body>
@@ -339,10 +367,11 @@ const SHOP = {
 <main id="top">
 
 <section class="hero grain">
+  <canvas class="bokeh" aria-hidden="true" hidden></canvas>
   <canvas class="lights" aria-hidden="true"></canvas>
   <div class="wrap">
     <div>
-      <span class="eyebrow fade">Coffee · Co. &nbsp;—&nbsp; Glendale, Arizona</span>
+      <span class="eyebrow fade" id="heroEyebrow">Coffee · Co. &nbsp;—&nbsp; Glendale, Arizona</span>
       <h1><span class="line"><span>Poured</span></span><span class="line"><span>with <em>heart.</em></span></span></h1>
       <p class="lede fade">Espresso, creamy milk and a little something sweet, woven into one cup. Signature lattes, matcha, chai, iced teas and Italian sodas on Deer Valley Rd.</p>
       <div class="ctas fade">
@@ -357,7 +386,7 @@ const SHOP = {
       <svg class="seal" viewBox="0 0 140 140" aria-hidden="true">
         <defs><path id="circ" d="M70 70 m-54 0 a54 54 0 1 1 108 0 a54 54 0 1 1 -108 0"/></defs>
         <circle cx="70" cy="70" r="69" fill="#8a4b44"/>
-        <text><textPath href="#circ" textLength="336" lengthAdjust="spacing">Third Strand Coffee Co. · Poured with heart · </textPath></text>
+        <text><textPath id="sealText" href="#circ" textLength="336" lengthAdjust="spacing">Third Strand Coffee Co. · Poured with heart · </textPath></text>
         <path fill="#f3ebe0" transform="translate(70 72) scale(1.1)" d="M0 14 C-6 8 -16 2 -16 -7 C-16 -14 -10 -18 -5 -18 C-2 -18 0 -16 0 -13 C0 -16 2 -18 5 -18 C10 -18 16 -14 16 -7 C16 2 6 8 0 14 Z"/>
       </svg>
     </div>
@@ -436,7 +465,7 @@ const SHOP = {
     </div>
     <div class="cup rv d2" aria-hidden="true">
       <span class="ring"></span><span class="ring"></span>
-      <figure><img src="assets/drinks/pumpkin-porch-latte.webp" alt="" loading="lazy"></figure>
+      <figure><img id="nextdoorImg" src="assets/drinks/pumpkin-porch-latte.webp" alt="" loading="lazy"></figure>
     </div>
   </div>
 </section>
@@ -472,6 +501,7 @@ const SHOP = {
     <div class="crest"><img class="big" src="assets/logo-dark.svg" alt="Third Strand Coffee Co."></div>
     <p class="quote">Espresso, cream and something sweet, braided into one.</p>
     <nav><a href="#story">Our cup</a><a href="#signatures">Signatures</a><a href="#menu">Menu</a><a href="#visit">Visit</a><a id="ig" href="#" target="_blank" rel="noopener" hidden>Instagram</a></nav>
+    <canvas class="desert" aria-hidden="true" hidden></canvas>
     <p class="legal">© <span id="yr"></span> Third Strand Coffee Co. · Glendale, Arizona</p>
   </div>
 </footer>
@@ -520,17 +550,61 @@ const range = (a,b) => a===b ? money(a) : `${money(a)}–${money(b)}`;
 const img = slug => `assets/drinks/${slug}.webp`;
 const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
 
-/* marquee */
-const words = ["Espresso","Matcha","Chai","The Dani","The Presley","The Mom & Pop","Pumpkin Porch","Oversized cookies","Lotus","Italian sodas"];
-document.getElementById("marquee").innerHTML = [...words,...words].map(w=>`<span>${w}</span>`).join("");
+/* ---------- seasons ----------
+   The season is set on <html data-season> at the top of the page. Each light
+   theme says what the string lights look like: bulb colors, bulb shape, wire,
+   how the bulbs shimmer, and anything hung between them. Add a season by adding
+   a theme here (and its words below). */
+const LIGHT_THEMES = {
+  default: {
+    bulbs: [{glass:[255,226,170], glow:[255,178,98]}],
+    shape: "globe", wire: "rgba(243,235,224,.2)", wireWidth: 1.2, shimmer: "flicker"
+  },
+  christmas: {
+    // vintage C9 bulbs: berry red, warm white, evergreen, amber
+    bulbs: [{glass:[236,70,60], glow:[255,66,48]}, {glass:[255,226,176], glow:[255,190,110]},
+            {glass:[62,182,118], glow:[56,226,138]}, {glass:[255,184,80], glow:[255,150,40]}],
+    shape: "c9", wire: "rgba(104,140,108,.5)", wireWidth: 1.5, shimmer: "twinkle",
+    ornaments: {every: 3, colors: [[206,166,98],[150,28,40],[234,224,204],[34,92,66]]},
+    bokeh: true, desert: true
+  }
+};
+const SEASON_NAME = document.documentElement.dataset.season || "";
+const THEME = LIGHT_THEMES[SEASON_NAME] || LIGHT_THEMES.default;
+const SEASON_WORDS = {
+  christmas: {
+    eyebrow: "Merry &amp; bright<span class=\"loc\"> &nbsp;—&nbsp; Glendale, Arizona</span>",
+    seal: "Merry & bright · Third Strand Coffee Co. · ",
+    marquee: ["Merry & bright","Espresso","Mocha","The Dani","Iced, even in December","Chai","The Presley","Oversized cookies","Happy holidays","The Mom & Pop","Italian sodas"],
+    nextdoorImg: "mocha"
+  }
+}[SEASON_NAME];
+
+/* marquee (on seasonal themes the dots between words become little bulbs) */
+const words = SEASON_WORDS?.marquee || ["Espresso","Matcha","Chai","The Dani","The Presley","The Mom & Pop","Pumpkin Porch","Oversized cookies","Lotus","Italian sodas"];
+document.getElementById("marquee").innerHTML = [...words,...words].map((w,i)=>{
+  const c = THEME.bulbs[i % THEME.bulbs.length].glow;
+  return `<span style="--c:rgb(${c});--d:${(-i*0.7).toFixed(1)}s">${esc(w)}</span>`;
+}).join("");
+if (SEASON_WORDS) {
+  document.getElementById("heroEyebrow").innerHTML = SEASON_WORDS.eyebrow;
+  document.getElementById("sealText").textContent = SEASON_WORDS.seal;
+  document.getElementById("nextdoorImg").src = img(SEASON_WORDS.nextdoorImg);
+}
+
+const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
+const smooth = v => (v = clamp01(v), v*v*(3 - 2*v));
 
 /* string lights: a small rope simulation (verlet) so the strands hang naturally
-   and sway in a light breeze. Each bulb hangs from the wire, swings a little,
-   and glows with a soft flicker. Canvas 2D, no libraries. */
+   and sway in a light breeze. Each bulb (and ornament) hangs from the wire as a
+   short pendulum, so it swings on its own. The bulbs switch on one after another
+   when the page opens, and the wire gives when a pointer brushes through it.
+   Canvas 2D, no libraries. */
 (function(){
-  const cv = document.querySelector(".lights"), ctx = cv.getContext("2d");
+  const cv = document.querySelector(".lights"), ctx = cv.getContext("2d"), hero = cv.parentElement;
   const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let W = 0, H = 230, dpr = 1, ropes = [], bulbs = [], t = 0, running = false, raf = 0;
+  const c9 = THEME.shape === "c9", O = THEME.ornaments;
+  let W = 0, H = 230, dpr = 1, ropes = [], bulbs = [], orns = [], t = 0, age = 0, running = false, raf = 0;
 
   function rope(ax, ay, bx, by, sag, spacing){
     const chord = Math.hypot(bx-ax, by-ay), len = chord + 8*sag*sag/(3*chord);
@@ -539,16 +613,23 @@ document.getElementById("marquee").innerHTML = [...words,...words].map(w=>`<span
       const u = i/n, x = ax + (bx-ax)*u, y = ay + (by-ay)*u + 4*sag*u*(1-u);
       pts.push({x, y, px:x, py:y});
     }
-    const r = {pts, seg, ax, ay, bx, by};
+    const r = {pts, seg, ax, ay, bx, by}, small = W < 700;
     const every = Math.max(2, Math.round(spacing / seg));
-    for (let i = every; i < n - every/2; i += every) bulbs.push({r, i, a:0, va:0, ph:Math.random()*99, f:1});
+    for (let i = every, j = 0; i < n - every/2; i += every, j++) {
+      const k = bulbs.length;
+      bulbs.push({r, i, k, a:0, va:0, ph:Math.random()*99, f:1, sp:0, on:1, lit:1, c:THEME.bulbs[k % THEME.bulbs.length]});
+      // an ornament on a thread in some of the gaps between bulbs
+      if (O && j % O.every === 1 && i + every < n - every/2)
+        orns.push({r, i: i + Math.round(every/2), a:0, va:0, near: bulbs[k], c: O.colors[orns.length % O.colors.length],
+          len: small ? 8 + Math.random()*12 : 14 + Math.random()*30, rad: small ? 4.2 + Math.random()*1.3 : 5.8 + Math.random()*2.4});
+    }
     return r;
   }
 
   function layout(){
     W = cv.clientWidth; dpr = Math.min(2, devicePixelRatio || 1);
     cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
-    ropes = []; bulbs = [];
+    ropes = []; bulbs = []; orns = [];
     if (W < 700) ropes.push(rope(-10, 100, W+10, 100, 30, 48));          // phones: one swag below the top bar
     else {
       const m = W*0.514;
@@ -559,6 +640,12 @@ document.getElementById("marquee").innerHTML = [...words,...words].map(w=>`<span
 
   // gentle, layered breeze: slow swell plus a little gust, varying along the wire
   const wind = (x, t) => 26*Math.sin(t*0.55 + x*0.0021) + 14*Math.sin(t*1.27 + x*0.0057 + 1.3) + 6*Math.sin(t*2.9 + x*0.013);
+
+  function swing(o, L, damp, dt){            // a pendulum of length L hanging from a moving point
+    const p = o.r.pts[o.i], ax = (p.x - p.px)/dt;
+    o.va += (-(81/L)*Math.sin(o.a) - damp*o.va - ax*0.108/L)*dt;
+    o.a += o.va*dt; o.a = Math.max(-0.7, Math.min(0.7, o.a));
+  }
 
   function step(dt, settling){
     t += dt;
@@ -578,51 +665,130 @@ document.getElementById("marquee").innerHTML = [...words,...words].map(w=>`<span
         if (i+1 < n) { b.x -= dx*diff; b.y -= dy*diff; }
       }
     }
-    // each bulb is a short pendulum hanging from its point, nudged by the wire's motion
     for (const b of bulbs) {
-      const p = b.r.pts[b.i], ax = (p.x - p.px)/dt;
-      b.va += (-9*Math.sin(b.a) - 0.9*b.va - ax*0.012)*dt;
-      b.a += b.va*dt; b.a = Math.max(-0.6, Math.min(0.6, b.a));
-      b.f = 0.9 + 0.07*Math.sin(t*3.1 + b.ph) + 0.03*Math.sin(t*11.3 + b.ph*1.7);   // soft flicker
+      swing(b, 9, 0.9, dt);
+      if (THEME.shimmer === "twinkle") {
+        // a slow wave of brightness runs down the strand; now and then one bulb catches and flares
+        if (!settling && !still && Math.random() < dt*0.05) b.sp = 1;
+        b.sp *= Math.exp(-dt*2.2);
+        b.f = 0.72 + 0.18*(0.5 + 0.5*Math.sin(t*0.85 - b.k*0.5)) + 0.32*b.sp + 0.025*Math.sin(t*9.7 + b.ph);
+      } else b.f = 0.9 + 0.07*Math.sin(t*3.1 + b.ph) + 0.03*Math.sin(t*11.3 + b.ph*1.7);   // soft flicker
     }
+    for (const o of orns) swing(o, o.len + o.rad, 0.45, dt);
+  }
+
+  // a pointer brushing through the strands pushes the wire along with it
+  let ptr = null;
+  if (!still) {
+    hero.addEventListener("pointermove", e => {
+      const box = cv.getBoundingClientRect(), x = e.clientX - box.left, y = e.clientY - box.top;
+      if (ptr && y < H) {
+        const dx = x - ptr.x, dy = y - ptr.y, sp = Math.hypot(dx, dy), cap = Math.min(1, 16/(sp || 1));
+        for (const r of ropes) for (let i = 1; i < r.pts.length - 1; i++) {
+          const p = r.pts[i], d = Math.hypot(p.x - x, p.y - y);
+          if (d < 64) { const f = (1 - d/64)**2*0.32*cap; p.x += dx*f; p.y += dy*f; }
+        }
+      }
+      ptr = {x, y};
+    });
+    hero.addEventListener("pointerleave", () => ptr = null);
+  }
+
+  const rgb = (c, k = 1) => `${c[0]*k|0},${c[1]*k|0},${c[2]*k|0}`;
+
+  function drawC9(b, z){
+    const p = b.r.pts[b.i], c = b.c.glass, y0 = 5.5, len = 12.5;
+    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(-b.a); ctx.scale(z, z);
+    ctx.fillStyle = "#18241b"; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(-2.4, -0.6, 4.8, 6.8, 1.3) : ctx.rect(-2.4, -0.6, 4.8, 6.8); ctx.fill();
+    ctx.fillStyle = "rgba(170,200,170,.16)"; ctx.fillRect(-1.5, 0.4, 0.9, 5);            // socket ridge
+    ctx.beginPath(); ctx.moveTo(-2.6, y0);                                                 // glass: a cone easing to a soft point
+    ctx.bezierCurveTo(-5.3, y0+2.6, -4.7, y0+7.6, 0, y0+len); ctx.bezierCurveTo(4.7, y0+7.6, 5.3, y0+2.6, 2.6, y0); ctx.closePath();
+    ctx.fillStyle = `rgb(${rgb(c, 0.3)})`; ctx.fill();                                     // unlit glass
+    if (b.lit > 0.01) {
+      const L = Math.min(1, b.lit), g = ctx.createRadialGradient(0, y0+4.6, 0, 0, y0+4.6, 8.5);
+      g.addColorStop(0, `rgba(255,250,236,${L})`);
+      g.addColorStop(0.3, `rgba(${rgb(c)},${L})`);
+      g.addColorStop(1, `rgba(${rgb(c, 0.55)},${b.on})`);
+      ctx.fillStyle = g; ctx.fill();
+    }
+    ctx.fillStyle = `rgba(255,255,255,${0.22 + 0.4*b.on})`;
+    ctx.beginPath(); ctx.ellipse(-1.8, y0+3.4, 0.75, 2.5, 0.22, 0, 7); ctx.fill();
+    ctx.restore();
+  }
+
+  function drawOrnament(o){
+    const p = o.r.pts[o.i], s = Math.sin(o.a), co = Math.cos(o.a), c = o.c, R = o.rad;
+    const tx = p.x + s*o.len, ty = p.y + co*o.len, cx = p.x + s*(o.len + R), cy = p.y + co*(o.len + R);
+    ctx.strokeStyle = "rgba(226,206,166,.38)"; ctx.lineWidth = 0.7;
+    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(tx, ty); ctx.stroke();
+    ctx.save(); ctx.translate(tx, ty); ctx.rotate(-o.a);
+    const cap = ctx.createLinearGradient(-R*0.3, 0, R*0.3, 0);
+    cap.addColorStop(0, "#7d6a45"); cap.addColorStop(0.45, "#e8d5a4"); cap.addColorStop(1, "#6f5c3a");
+    ctx.fillStyle = cap; ctx.fillRect(-R*0.3, -0.4, R*0.6, R*0.4);
+    ctx.restore();
+    const g = ctx.createRadialGradient(cx - R*0.36, cy - R*0.4, R*0.05, cx, cy, R*1.04);   // glass ball lit from the upper left
+    g.addColorStop(0, `rgb(${c.map(v => v + (255-v)*0.6 | 0)})`);
+    g.addColorStop(0.32, `rgb(${rgb(c)})`);
+    g.addColorStop(1, `rgb(${rgb(c, 0.28)})`);
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.fill();
+    const n = o.near;                                       // the neighbouring bulb's color caught in the glass
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = `rgba(${n.c.glow},${0.4*n.lit})`; ctx.beginPath(); ctx.ellipse(cx - R*0.58, cy + R*0.18, R*0.2, R*0.42, 0.3, 0, 7); ctx.fill();
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = `rgba(255,255,255,${0.5 + 0.4*n.lit})`; ctx.beginPath(); ctx.arc(cx - R*0.36, cy - R*0.42, R*0.16, 0, 7); ctx.fill();
   }
 
   function draw(){
     ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
     // wire
-    ctx.lineWidth = 1.2; ctx.strokeStyle = "rgba(243,235,224,.2)"; ctx.lineCap = "round";
+    ctx.lineWidth = THEME.wireWidth; ctx.strokeStyle = THEME.wire; ctx.lineCap = "round";
     for (const r of ropes) {
       const P = r.pts; ctx.beginPath(); ctx.moveTo(P[0].x, P[0].y);
       for (let i = 1; i < P.length-1; i++) { const mx = (P[i].x+P[i+1].x)/2, my = (P[i].y+P[i+1].y)/2; ctx.quadraticCurveTo(P[i].x, P[i].y, mx, my); }
       ctx.lineTo(P[P.length-1].x, P[P.length-1].y); ctx.stroke();
     }
-    const small = W < 700, L = small ? 7 : 9, R = small ? 2.6 : 3.2;
-    // sockets and glass
+    const small = W < 700, z = small ? 0.85 : 1.2, L = small ? 7 : 9, R = small ? 2.6 : 3.2;
+    // where each bulb hangs, and how bright it is (they switch on one after another)
     for (const b of bulbs) {
-      const p = b.r.pts[b.i], bx = p.x + Math.sin(b.a)*L, by = p.y + Math.cos(b.a)*L;
-      b.x = bx; b.y = by;
+      const p = b.r.pts[b.i], d = c9 ? 10*z : L;
+      b.x = p.x + Math.sin(b.a)*d; b.y = p.y + Math.cos(b.a)*d;
+      b.on = still ? 1 : smooth((age - 0.35 - b.k*0.06)/0.45);
+      b.lit = b.f*b.on;
+    }
+    for (const o of orns) drawOrnament(o);
+    // sockets for the round bulbs
+    if (!c9) for (const b of bulbs) {
+      const p = b.r.pts[b.i];
       ctx.strokeStyle = "rgba(30,18,18,.9)"; ctx.lineWidth = small ? 2 : 2.4;
       ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + Math.sin(b.a)*(L-R), p.y + Math.cos(b.a)*(L-R)); ctx.stroke();
     }
     // glow (additive)
     ctx.globalCompositeOperation = "lighter";
     for (const b of bulbs) {
-      const g = small ? 16 : 22, grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, g);
-      grad.addColorStop(0, `rgba(255,196,120,${0.42*b.f})`); grad.addColorStop(0.35, `rgba(255,170,90,${0.14*b.f})`); grad.addColorStop(1, "rgba(255,150,70,0)");
+      if (b.lit < 0.01) continue;
+      const c = b.c.glow;
+      if (c9) {                                              // a wide wash of color on the wall behind
+        const G2 = small ? 44 : 70, w = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, G2);
+        w.addColorStop(0, `rgba(${c},${0.14*b.lit})`); w.addColorStop(1, `rgba(${c},0)`);
+        ctx.fillStyle = w; ctx.beginPath(); ctx.arc(b.x, b.y, G2, 0, 7); ctx.fill();
+      }
+      const g = (small ? 16 : 22)*(c9 ? 1.15 : 1), grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, g);
+      grad.addColorStop(0, `rgba(${c},${(c9 ? 0.55 : 0.42)*b.lit})`); grad.addColorStop(0.35, `rgba(${c},${0.14*b.lit})`); grad.addColorStop(1, `rgba(${c},0)`);
       ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(b.x, b.y, g, 0, 7); ctx.fill();
     }
     ctx.globalCompositeOperation = "source-over";
     for (const b of bulbs) {
-      ctx.fillStyle = `rgba(255,226,170,${0.85 + 0.15*b.f})`; ctx.beginPath(); ctx.ellipse(b.x, b.y, R*0.85, R, b.a, 0, 7); ctx.fill();
-      ctx.fillStyle = `rgba(255,252,236,${0.8*b.f})`; ctx.beginPath(); ctx.arc(b.x - R*0.15, b.y - R*0.2, R*0.38, 0, 7); ctx.fill();
+      if (c9) { drawC9(b, z); continue; }
+      const k = 0.4 + 0.6*b.on;
+      ctx.fillStyle = `rgba(${rgb(b.c.glass, k)},${0.85 + 0.15*b.f})`; ctx.beginPath(); ctx.ellipse(b.x, b.y, R*0.85, R, b.a, 0, 7); ctx.fill();
+      ctx.fillStyle = `rgba(255,252,236,${0.8*b.lit})`; ctx.beginPath(); ctx.arc(b.x - R*0.15, b.y - R*0.2, R*0.38, 0, 7); ctx.fill();
     }
   }
 
   let last = 0;
   function frame(now){
-    const dt = Math.min(1/30, (now - (last || now))/1000) || 1/60; last = now;
+    const dt = Math.min(1/30, (now - (last || now))/1000) || 1/60; last = now; age += dt;
     step(dt); draw();
-    cv.dataset.low = Math.round(Math.max(...bulbs.map(b => b.y || 0)));
     if (running) raf = requestAnimationFrame(frame);
   }
   function start(){ if (running || still) return; running = true; last = 0; raf = requestAnimationFrame(frame); }
@@ -633,6 +799,154 @@ document.getElementById("marquee").innerHTML = [...words,...words].map(w=>`<span
   new IntersectionObserver(([e]) => e.isIntersecting ? start() : stop()).observe(cv);
   document.addEventListener("visibilitychange", () => document.hidden ? stop() : start());
   let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (cv.clientWidth !== W) { layout(); draw(); } }, 150); });
+})();
+
+/* Runs a canvas scene only while it's on screen and the tab is visible; with
+   reduced motion it draws one still frame. */
+function scene(cv, layout, draw){
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let running = false, raf = 0, last = 0, t = 0, W = 0;
+  const frame = now => {
+    const dt = Math.min(1/30, (now - (last || now))/1000) || 1/60; last = now; t += dt;
+    draw(t, dt); if (running) raf = requestAnimationFrame(frame);
+  };
+  const start = () => { if (running || still) return; running = true; last = 0; raf = requestAnimationFrame(frame); };
+  const stop = () => { running = false; cancelAnimationFrame(raf); };
+  const fit = () => { W = cv.clientWidth; const dpr = Math.min(2, devicePixelRatio || 1); cv.width = Math.round(W*dpr); cv.height = Math.round(cv.clientHeight*dpr); layout(W, cv.clientHeight, dpr); draw(still ? 99 : t, 0); };
+  fit();
+  new IntersectionObserver(([e]) => e.isIntersecting ? start() : stop()).observe(cv);
+  document.addEventListener("visibilitychange", () => document.hidden ? stop() : start());
+  let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (cv.clientWidth !== W) fit(); }, 150); });
+}
+
+/* bokeh: out-of-focus lights drifting up slowly behind the hero, like warm air
+   carrying the glow of a tree across the room */
+if (THEME.bokeh) (function(){
+  const cv = document.querySelector(".bokeh"); cv.hidden = false;
+  const ctx = cv.getContext("2d");
+  let W, H, dpr, P = [];
+  const make = y => {
+    const z = Math.random(), small = W < 700;
+    return {x: Math.random()*W, y, z, r: (small ? 14 : 22) + z*(small ? 34 : 64), a: 0.035 + (1 - z)*0.055,
+      c: THEME.bulbs[Math.random()*THEME.bulbs.length | 0].glow, vy: 3 + z*9, ph: Math.random()*99, sw: 8 + Math.random()*18};
+  };
+  scene(cv, (w, h, d) => { W = w; H = h; dpr = d; P = Array.from({length: W < 700 ? 9 : 17}, () => make(Math.random()*H)); },
+  (t, dt) => {
+    ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
+    ctx.globalCompositeOperation = "lighter";
+    for (const p of P) {
+      p.y -= p.vy*dt; if (p.y < -p.r) Object.assign(p, make(H + p.r));
+      const x = p.x + Math.sin(t*0.25 + p.ph)*p.sw, a = p.a*(0.55 + 0.45*Math.sin(t*0.4 + p.ph)) * smooth(t/2.5 + 0.0001);
+      const g = ctx.createRadialGradient(x, p.y, 0, x, p.y, p.r);   // a soft disc with a slightly brighter rim, like a real lens
+      g.addColorStop(0, `rgba(${p.c},${a*0.55})`); g.addColorStop(0.8, `rgba(${p.c},${a*0.75})`);
+      g.addColorStop(0.92, `rgba(${p.c},${a})`); g.addColorStop(1, `rgba(${p.c},0)`);
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, p.y, p.r, 0, 7); ctx.fill();
+    }
+  });
+})();
+
+/* desert night in the footer: a ridge line, saguaros wrapped in lights, a row of
+   luminarias (paper-bag lanterns, the Southwest's own holiday tradition) and a
+   few stars. The still parts are painted once; the lights and candles animate. */
+if (THEME.desert) (function(){
+  const cv = document.querySelector(".desert"); cv.hidden = false;
+  const ctx = cv.getContext("2d"), pal = THEME.bulbs;
+  let W, H, dpr, G, bg, stars, bags, wraps, small;
+
+  function saguaro(b, x, y, h){
+    const w = h*0.15, aw = w*0.8, out = [];
+    b.strokeStyle = "#110909"; b.lineCap = "round"; b.lineJoin = "round";
+    b.lineWidth = w; b.beginPath(); b.moveTo(x, y + w); b.lineTo(x, y - h + w/2); b.stroke();
+    const arms = h > 80 ? [[-1, 0.42, 0.76], [1, 0.3, 0.62]] : [[1, 0.38, 0.7]];
+    for (const [sd, a0, a1] of arms) {                     // each arm reaches out, bends and rises
+      const ax = x + sd*w*1.35, r = w*0.55, y0 = y - h*a0;
+      b.lineWidth = aw; b.beginPath(); b.moveTo(x, y0); b.lineTo(ax - sd*r, y0); b.quadraticCurveTo(ax, y0, ax, y0 - r); b.lineTo(ax, y - h*a1 + aw/2); b.stroke();
+      out.push({x: ax, y0: y0 - r, y1: y - h*a1 + aw*0.3, w: aw});
+    }
+    out.push({x, y0: y - h*0.08, y1: y - h + w*0.6, w});
+    for (const s of out) {                                  // a strand spiralling up each stem; only the front half shows
+      const turns = (s.y0 - s.y1)/(small ? 17 : 22), n = Math.round(turns*5), pts = [];
+      for (let i = 0; i <= n; i++) {
+        const u = i/n, ph = u*turns*Math.PI*2;
+        pts.push({x: s.x + Math.sin(ph)*s.w*0.52, y: s.y0 + (s.y1 - s.y0)*u + Math.cos(ph)*s.w*0.16, front: Math.cos(ph), k: wraps.length, c: pal[wraps.length % pal.length].glow, ph: Math.random()*99});
+        wraps.push(pts[pts.length-1]);
+      }
+      s.pts = pts;
+    }
+    return out;
+  }
+
+  let stems = [];
+  function layout(w, h, d){
+    W = w; H = h; dpr = d; small = W < 700; G = H - (small ? 22 : 28);
+    bg = document.createElement("canvas"); bg.width = cv.width; bg.height = cv.height;
+    const b = bg.getContext("2d"); b.setTransform(dpr,0,0,dpr,0,0);
+    const ridge = x => G - (small ? 34 : 48) - 20*Math.sin(x*0.0042 + 1) - 12*Math.sin(x*0.011 + 2) - 5*Math.sin(x*0.033);
+    b.fillStyle = "rgba(86,48,46,.32)"; b.beginPath(); b.moveTo(0, H);                  // far ridge
+    for (let x = 0; x <= W + 8; x += 8) b.lineTo(x, ridge(x)); b.lineTo(W, H); b.fill();
+    const cacti = small ? [[0.1, 104], [0.9, 66]] : [[0.09, 150], [0.8, 100], [0.9, 60]];
+    wraps = []; stems = [];
+    for (const [fx, ch] of cacti) stems.push(...saguaro(b, W*fx, G - 3, ch));
+    const gr = b.createLinearGradient(0, G - 12, 0, H);                                   // the ground, fading into the footer
+    gr.addColorStop(0, "#150b0c"); gr.addColorStop(1, "#1d1011");
+    b.fillStyle = gr; b.beginPath(); b.moveTo(0, H);
+    for (let x = 0; x <= W + 8; x += 8) b.lineTo(x, G - 6 - 5*Math.sin(x*0.006 + 0.5) - 3*Math.sin(x*0.019)); b.lineTo(W, H); b.fill();
+    stars = Array.from({length: small ? 22 : 48}, () => ({x: Math.random()*W, y: 6 + Math.random()*(ridge(0) - 40), r: 0.3 + Math.random()*0.9, ph: Math.random()*99, s: 0.5 + Math.random()*1.5}));
+    bags = []; const gap = small ? 58 : 84;
+    for (let x = gap*0.7; x < W - gap*0.4; x += gap)
+      if (!cacti.some(([fx, ch]) => Math.abs(x - W*fx) < ch*0.36)) bags.push({x, ph: Math.random()*99, s: (small ? 0.78 : 1)*(0.9 + Math.random()*0.14)});
+  }
+
+  function bag(L, t){
+    const s = L.s, w = 17*s, h = 22*s, x = L.x, y = G + 1;
+    const f = (0.8 + 0.08*Math.sin(t*6.3 + L.ph) + 0.06*Math.sin(t*13.1 + L.ph*1.9) + 0.06*Math.sin(t*2.1 + L.ph*0.6)) * smooth(t/1.6 + 0.0001);
+    ctx.globalCompositeOperation = "lighter";
+    let g = ctx.createRadialGradient(x, y - h*0.5, 0, x, y - h*0.5, 52*s);                 // glow on the air around it
+    g.addColorStop(0, `rgba(255,168,84,${0.17*f})`); g.addColorStop(1, "rgba(255,168,84,0)");
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y - h*0.5, 52*s, 0, 7); ctx.fill();
+    ctx.save(); ctx.translate(x, y); ctx.scale(1, 0.24);                                   // a pool of light on the ground
+    g = ctx.createRadialGradient(0, 0, 0, 0, 0, 34*s);
+    g.addColorStop(0, `rgba(255,170,90,${0.34*f})`); g.addColorStop(1, "rgba(255,170,90,0)");
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, 34*s, 0, 7); ctx.fill(); ctx.restore();
+    ctx.globalCompositeOperation = "source-over";
+    ctx.beginPath(); ctx.moveTo(x - w/2, y); ctx.lineTo(x - w*0.45, y - h); ctx.lineTo(x + w*0.45, y - h); ctx.lineTo(x + w/2, y); ctx.closePath();
+    const k = 0.7 + 0.3*f;                                                                 // paper lit from inside, brightest low where the candle sits
+    g = ctx.createLinearGradient(0, y, 0, y - h);
+    g.addColorStop(0, `rgb(${255*k|0},${212*k|0},${150*k|0})`); g.addColorStop(0.45, `rgb(${246*k|0},${182*k|0},${112*k|0})`); g.addColorStop(1, `rgb(${170*k|0},${104*k|0},${58*k|0})`);
+    ctx.fillStyle = g; ctx.fill();
+    g = ctx.createLinearGradient(x - w/2, 0, x + w/2, 0);                                 // darker at the folded sides
+    g.addColorStop(0, "rgba(70,30,18,.42)"); g.addColorStop(0.3, "rgba(70,30,18,0)"); g.addColorStop(0.7, "rgba(70,30,18,0)"); g.addColorStop(1, "rgba(70,30,18,.5)");
+    ctx.fillStyle = g; ctx.fill();
+    ctx.fillStyle = "rgba(90,46,26,.55)"; ctx.fillRect(x - w*0.45, y - h, w*0.9, 3.4*s);   // the folded cuff
+    ctx.globalCompositeOperation = "lighter";
+    g = ctx.createRadialGradient(x, y - h*0.3, 0, x, y - h*0.3, w*0.55);                   // the candle seen through the paper
+    g.addColorStop(0, `rgba(255,220,150,${0.55*f})`); g.addColorStop(1, "rgba(255,200,120,0)");
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y - h*0.3, w*0.55, 0, 7); ctx.fill();
+    ctx.fillStyle = `rgba(255,214,150,${0.5*f})`; ctx.fillRect(x - w*0.4, y - h - 0.6, w*0.8, 1);   // light spilling from the open top
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  scene(cv, layout, t => {
+    ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
+    for (const s of stars) { ctx.fillStyle = `rgba(243,235,224,${0.12 + 0.3*(0.5 + 0.5*Math.sin(t*s.s + s.ph))})`; ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 7); ctx.fill(); }
+    ctx.setTransform(1,0,0,1,0,0); ctx.drawImage(bg, 0, 0); ctx.setTransform(dpr,0,0,dpr,0,0);
+    // the strands on the saguaros: wire first, then bulbs, front of the stem only
+    ctx.strokeStyle = THEME.wire; ctx.lineWidth = 0.7;
+    for (const st of stems) { ctx.beginPath(); let pen = false;
+      for (const p of st.pts) { if (p.front > 0) { pen ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y); pen = true; } else pen = false; }
+      ctx.stroke(); }
+    ctx.globalCompositeOperation = "lighter";
+    for (const p of wraps) {
+      if (p.front <= 0.05) continue;
+      const on = smooth(t/1.2 - p.k*0.006), f = (0.62 + 0.38*(0.5 + 0.5*Math.sin(t*1.3 - p.k*0.45)) + 0.025*Math.sin(t*9 + p.ph))*on*(0.45 + 0.55*p.front);
+      const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, small ? 4.5 : 6);
+      g.addColorStop(0, `rgba(${p.c},${0.75*f})`); g.addColorStop(1, `rgba(${p.c},0)`);
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, small ? 4.5 : 6, 0, 7); ctx.fill();
+      ctx.fillStyle = `rgba(255,244,220,${0.85*f})`; ctx.beginPath(); ctx.arc(p.x, p.y, small ? 0.9 : 1.1, 0, 7); ctx.fill();
+    }
+    ctx.globalCompositeOperation = "source-over";
+    for (const L of bags) bag(L, t);
+  });
 })();
 
 /* signatures */
